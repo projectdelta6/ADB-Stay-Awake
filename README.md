@@ -1,4 +1,5 @@
-# ADB-Stay-Awake - https://github.com/projectdelta6/ADB-Stay-Awake
+# ADB-Stay-Awake 
+https://github.com/projectdelta6/ADB-Stay-Awake
 This is a simple app that has one purpose: Automatically enable/dissable the "Stay Awake" Developer Options setting as you connect/disconnect to ADB.
 
 ## Important
