@@ -43,7 +43,7 @@ class ADBNotificationListener : android.service.notification.NotificationListene
 
     private fun setAndSendBroadcast(turnOn: Boolean) {
         if (helperUtil.setStayAwake(turnOn)) {
-            //refresh the Activity UI if it is running...
+            //update the Activity UI if it is running...
             LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(Intent(INTENT_ACTION))
         } else {
             //todo:?

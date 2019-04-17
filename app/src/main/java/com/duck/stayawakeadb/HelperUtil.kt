@@ -67,21 +67,22 @@ class HelperUtil(private val applicationContext: Context?) {
     }
 
     private fun setInt(turnOn: Boolean, name: String, onValue: Int, offValue: Int): Boolean {
-        val isOn = Settings.Global.getInt(
+        val isOff = Settings.Global.getInt(
             applicationContext?.contentResolver,
             name,
-            onValue
-        ) == 1
+            offValue
+        ) == offValue
+
         var changed: Boolean = false
         try {
-            if (turnOn && !isOn) {
+            if (turnOn && isOff) {
                 Settings.Global.putInt(
                     applicationContext?.contentResolver,
                     name,
                     onValue
                 )
                 changed = true
-            } else if (isOn) {
+            } else if (!isOff) {
                 Settings.Global.putInt(
                     applicationContext?.contentResolver,
                     name,
