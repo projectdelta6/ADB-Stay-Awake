@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (checkAndAskNotificationpermission()) {
+        if (checkAndAskNotificationPermission()) {
             registerReceiver()
             tv_version.text = fromHtml(getString(R.string.app_version, BuildConfig.VERSION_NAME))
             setUpDevOpt()
@@ -61,12 +61,12 @@ class MainActivity : AppCompatActivity() {
         unregisterReceiver()
     }
 
-    private fun checkAndAskNotificationpermission(): Boolean {
+    private fun checkAndAskNotificationPermission(): Boolean {
         if (!helperUtil.notificationPermissionGranted) {
             val dialogBuilder: AlertDialog.Builder = AlertDialog.Builder(this)
             dialogBuilder.setMessage(getString(R.string.request_notification_permission, getString(R.string.app_name)))
                 .setPositiveButton("go to settings") { dialog, which ->
-                    startActivity(Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"))
+                    startActivity(Intent(HelperUtil.STTINGS_NOTIFICATION_LISTENER))
                 }
                 .setNegativeButton("Cancel") { dialog, which ->
                     dialog.cancel()
@@ -93,11 +93,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun setUpUSBDebug() {
         if (helperUtil.developerOptionsEnabled) {
-            usbdebug_switch.isChecked = helperUtil.USBDebuggingEnabled
+            usbdebug_switch.isChecked = helperUtil.usbDebuggingEnabled
             usbdebug_group.visibility = View.VISIBLE
             usbdebug_switch.setOnCheckedChangeListener { buttonView, isChecked ->
-                helperUtil.setUSBDebugging(isChecked)
-                if (isChecked) {
+                if (!helperUtil.setUSBDebugging(isChecked)) {
+                    usbdebug_switch.isChecked = helperUtil.usbDebuggingEnabled
+                }
+                if (helperUtil.usbDebuggingEnabled) {
                     setUpStayAwake()
                 } else {
                     stayawake_group.visibility = View.GONE
@@ -111,12 +113,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setUpStayAwake() {
-        if (helperUtil.USBDebuggingEnabled) {
-            stayawake_switch.isChecked = helperUtil.StayAwakeEnabled
+        if (helperUtil.usbDebuggingEnabled) {
+            stayawake_switch.isChecked = helperUtil.stayAwakeEnabled
             stayawake_group.visibility = View.VISIBLE
             stayawake_switch.setOnCheckedChangeListener { buttonView, isChecked ->
-                helperUtil.setStayAwake(isChecked)
+                if (!helperUtil.setStayAwake(isChecked)) {
+                    stayawake_switch.isChecked = helperUtil.stayAwakeEnabled
+                }
             }
+
         } else {
             stayawake_group.visibility = View.GONE
             stayawake_switch.setOnCheckedChangeListener(null)
