@@ -1,6 +1,7 @@
-package com.duck.stayawakeadb
+package com.duck.stayawakeadb.util
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.BatteryManager
 import android.provider.Settings
 import android.widget.Toast
@@ -8,7 +9,7 @@ import android.widget.Toast
 /**
  * Created by Bradley Duck on 2019/02/18.
  */
-class HelperUtil(private val applicationContext: Context?) {
+class SettingsHelperUtil(private val applicationContext: Context?) {
 
     val notificationPermissionGranted: Boolean
         get() {
@@ -61,7 +62,10 @@ class HelperUtil(private val applicationContext: Context?) {
 
     fun setStayAwake(turnOn: Boolean): Boolean {
         if (developerOptionsEnabled && usbDebuggingEnabled) {
-            return setInt(turnOn, Settings.Global.STAY_ON_WHILE_PLUGGED_IN, ACandUSB, OFF)
+            return setInt(turnOn, Settings.Global.STAY_ON_WHILE_PLUGGED_IN,
+                ACandUSB,
+                OFF
+            )
         }
         return false
     }
@@ -94,19 +98,19 @@ class HelperUtil(private val applicationContext: Context?) {
             Log.e(this, "needs permission: ", e)
             //todo: needs permission command
         } finally {
-            if (changed) {
+            /*if (changed) {
                 toast(turnOn, name)
-            }
+            }*/
             return changed
         }
     }
 
     private fun toast(turnOn: Boolean, name: String) {
         var text: String
-        if (turnOn) {
-            text = "on"
+        text = if (turnOn) {
+            "on"
         } else {
-            text = "off"
+            "off"
         }
         Toast.makeText(
             applicationContext,
@@ -155,7 +159,7 @@ class HelperUtil(private val applicationContext: Context?) {
         }
 
     companion object {
-        val Log = com.duck.stayawakeadb.Logger()
+        val Log = Logger()
         const val OFF: Int = 0
         const val AC: Int = BatteryManager.BATTERY_PLUGGED_AC
         const val USB: Int = BatteryManager.BATTERY_PLUGGED_USB
@@ -172,5 +176,7 @@ class HelperUtil(private val applicationContext: Context?) {
         const val STTINGS: String = "android.settings."
         const val STTINGS_NOTIFICATION_LISTENER: String = "${STTINGS}ACTION_NOTIFICATION_LISTENER_SETTINGS"
         const val STTINGS_DEVELOPER: String = "${STTINGS}ACTION_APPLICATION_DEVELOPMENT_SETTINGS"
+
+        var ADBConnectionState: Boolean = false
     }
 }

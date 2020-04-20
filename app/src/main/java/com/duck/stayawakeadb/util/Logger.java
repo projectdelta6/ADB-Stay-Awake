@@ -1,4 +1,4 @@
-package com.duck.stayawakeadb;
+package com.duck.stayawakeadb.util;
 
 import com.duck.flexilogger.FlexiLog;
 import org.jetbrains.annotations.NotNull;
