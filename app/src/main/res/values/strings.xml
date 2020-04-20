@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Stay-Awake on ADB</string>
+    <string name="preference_file_key">com.duck.stay_awake_prefs_file</string>
     <string name="app_version">&lt;u>v %s&lt;/u></string>
     <string name="request_notification_permission">In order to listen for the \'ADB connected\' notification this app
         needs access to read notifications.\nPlease enable this permission for %s

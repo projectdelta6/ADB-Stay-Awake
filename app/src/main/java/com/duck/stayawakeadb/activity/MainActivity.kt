@@ -1,4 +1,4 @@
-package com.duck.stayawakeadb
+package com.duck.stayawakeadb.activity
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -11,6 +11,11 @@ import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.duck.stayawakeadb.*
+import com.duck.stayawakeadb.constant.Constants.notificationData
+import com.duck.stayawakeadb.service.ADBNotificationListener
+import com.duck.stayawakeadb.util.SettingsHelperUtil
+import com.duck.stayawakeadb.util.NotificationUtil
 import kotlinx.android.synthetic.main.activity_main.*
 
 
@@ -26,7 +31,7 @@ class MainActivity : AppCompatActivity() {
      * ToDo: check if WRITE_SECURE_SETTINGS permission is granted and, if not, prompt to run command.
      */
 
-    private lateinit var helperUtil: HelperUtil
+    private lateinit var settingsHelperUtil: SettingsHelperUtil
     private var receiverCache: BroadcastReceiver? = null
 
     private val receiver: BroadcastReceiver
@@ -43,7 +48,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        helperUtil = HelperUtil(applicationContext)
+        settingsHelperUtil = SettingsHelperUtil(applicationContext)
+        //ensure the notification channel is created
+        NotificationUtil.createNotificationChannel(
+            this,
+            notificationData
+        )
+
         setContentView(R.layout.activity_main)
     }
 
@@ -51,7 +62,10 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         if (checkAndAskNotificationPermission()) {
             registerReceiver()
-            tv_version.text = fromHtml(getString(R.string.app_version, BuildConfig.VERSION_NAME))
+            tv_version.text = fromHtml(getString(
+                R.string.app_version,
+                BuildConfig.VERSION_NAME
+            ))
             setUpDevOpt()
         }
     }
@@ -62,11 +76,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkAndAskNotificationPermission(): Boolean {
-        if (!helperUtil.notificationPermissionGranted) {
+        if (!settingsHelperUtil.notificationPermissionGranted) {
             val dialogBuilder: AlertDialog.Builder = AlertDialog.Builder(this)
-            dialogBuilder.setMessage(getString(R.string.request_notification_permission, getString(R.string.app_name)))
+            dialogBuilder.setMessage(getString(
+                R.string.request_notification_permission, getString(
+                    R.string.app_name
+                )))
                 .setPositiveButton("go to settings") { dialog, which ->
-                    startActivity(Intent(HelperUtil.STTINGS_NOTIFICATION_LISTENER))
+                    startActivity(Intent(SettingsHelperUtil.STTINGS_NOTIFICATION_LISTENER))
                 }
                 .setNegativeButton("Cancel") { dialog, which ->
                     dialog.cancel()
@@ -81,9 +98,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun setUpDevOpt() {
         devopt_switch.setOnClickListener(null)
-        devopt_switch.isChecked = helperUtil.developerOptionsEnabled
+        devopt_switch.isChecked = settingsHelperUtil.developerOptionsEnabled
         devopt_group.visibility = View.VISIBLE
-        if (helperUtil.developerOptionsEnabled) {
+        if (settingsHelperUtil.developerOptionsEnabled) {
             tv_devopt_des.text = getString(R.string.dev_settings_on)
         } else {
             tv_devopt_des.text = fromHtml(getString(R.string.dev_settings_off))
@@ -92,19 +109,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setUpUSBDebug() {
-        if (helperUtil.developerOptionsEnabled) {
-            usbdebug_switch.isChecked = helperUtil.usbDebuggingEnabled
+        if (settingsHelperUtil.developerOptionsEnabled) {
+            usbdebug_switch.setOnCheckedChangeListener(null)// clear listener
+            usbdebug_switch.isChecked = settingsHelperUtil.usbDebuggingEnabled// set checked state
             usbdebug_group.visibility = View.VISIBLE
             usbdebug_switch.setOnCheckedChangeListener { buttonView, isChecked ->
-                if (!helperUtil.setUSBDebugging(isChecked)) {
-                    usbdebug_switch.isChecked = helperUtil.usbDebuggingEnabled
+                if (!settingsHelperUtil.setUSBDebugging(isChecked)) {
+                    usbdebug_switch.isChecked = settingsHelperUtil.usbDebuggingEnabled
                 }
-                if (helperUtil.usbDebuggingEnabled) {
+                if (settingsHelperUtil.usbDebuggingEnabled) {
                     setUpStayAwake()
                 } else {
                     stayawake_group.visibility = View.GONE
                 }
-            }
+            }// set listener
         } else {
             usbdebug_group.visibility = View.GONE
             usbdebug_switch.setOnCheckedChangeListener(null)
@@ -113,14 +131,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setUpStayAwake() {
-        if (helperUtil.usbDebuggingEnabled) {
-            stayawake_switch.isChecked = helperUtil.stayAwakeEnabled
+        if (settingsHelperUtil.usbDebuggingEnabled) {
+            stayawake_switch.setOnCheckedChangeListener(null)//clear listener
+            stayawake_switch.isChecked = settingsHelperUtil.stayAwakeEnabled//set checked state
             stayawake_group.visibility = View.VISIBLE
             stayawake_switch.setOnCheckedChangeListener { buttonView, isChecked ->
-                if (!helperUtil.setStayAwake(isChecked)) {
-                    stayawake_switch.isChecked = helperUtil.stayAwakeEnabled
+                if (!settingsHelperUtil.setStayAwake(isChecked)) {
+                    stayawake_switch.isChecked = settingsHelperUtil.stayAwakeEnabled
                 }
-            }
+                NotificationUtil.updateStayAwakeNotification(this)
+            }// set listener
 
         } else {
             stayawake_group.visibility = View.GONE
@@ -130,7 +150,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun registerReceiver() {
         LocalBroadcastManager.getInstance(applicationContext)
-            .registerReceiver(receiver, ADBNotificationListener.intentFilter)
+            .registerReceiver(receiver,
+                ADBNotificationListener.intentFilter
+            )
     }
 
     private fun unregisterReceiver() {
