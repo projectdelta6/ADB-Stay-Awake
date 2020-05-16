@@ -15,4 +15,15 @@
     <string name="developer_options_description">Whether developer options are enabled or not</string>
     <string name="usb_debugging">USB debugging</string>
     <string name="usb_debugging_description">Debug mode when USB is connected</string>
+    <!-- Notification strings -->
+    <string name="awake_on_notification_title">Stay Awake setting is On</string>
+    <string name="awake_on_notification_text">ADB connected - Stay Awake is On</string>
+    <string name="awake_on_notification_big_text">An ADB connection has been detected and the Stay awake setting has been turned on.\nThe setting will automatically be turned off when the ADB connection is lost</string>
+    <string name="awake_on_notification_summary">Stay Awake On</string>
+    <string name="awake_on_notification_action_text">Turn off</string>
+    <string name="awake_off_notification_title">Stay Awake setting is Off</string>
+    <string name="awake_off_notification_text">ADB Connected - Stay Awake is Off</string>
+    <string name="awake_off_notification_big_text">An ADB connection has been detected, but the Stay Stay Awake setting is currently off.</string>
+    <string name="awake_off_notification_summary">Stay Awake Off</string>
+    <string name="awake_off_notification_action_text">Turn on</string>
 </resources>

@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Html
 import android.text.Spanned
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -139,6 +140,7 @@ class MainActivity : AppCompatActivity() {
                 if (!settingsHelperUtil.setStayAwake(isChecked)) {
                     stayawake_switch.isChecked = settingsHelperUtil.stayAwakeEnabled
                 }
+                Log.v("testing", "updating notification from MainActivity")
                 NotificationUtil.updateStayAwakeNotification(this)
             }// set listener
 

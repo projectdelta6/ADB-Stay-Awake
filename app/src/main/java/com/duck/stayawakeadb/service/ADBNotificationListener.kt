@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.service.notification.StatusBarNotification
+import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.duck.stayawakeadb.constant.Constants.notificationData
 import com.duck.stayawakeadb.util.SettingsHelperUtil
@@ -36,7 +37,7 @@ class ADBNotificationListener : android.service.notification.NotificationListene
     }
 
     override fun onNotificationRemoved(sbn: StatusBarNotification) {
-        if (settingsHelperUtil.developerOptionsEnabled && settingsHelperUtil.usbDebuggingEnabled) {
+        if (settingsHelperUtil.developerOptionsEnabled) {
             if (sbn.packageName.equals("android", ignoreCase = true)) {
                 val notification = sbn.notification
                 val title = notification.extras.getString("android.title")
@@ -57,7 +58,9 @@ class ADBNotificationListener : android.service.notification.NotificationListene
             ))
         } else {
             //todo:?
+            Log.e("Error", "settingsHelperUtil.setStayAwake($turnOn) returned false")
         }
+        Log.v("testing", "Updating notification from listener, turnOn=$turnOn")
         NotificationUtil.updateStayAwakeNotification(this)
     }
 

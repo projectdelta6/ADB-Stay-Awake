@@ -76,25 +76,25 @@ object NotificationUtil {
             val settingsHelperUtil: SettingsHelperUtil =
                 SettingsHelperUtil(context.applicationContext)
 
-            var actionText: String =
+            val actionText: String =
                 if (settingsHelperUtil.stayAwakeEnabled) {
                     notificationData.setData(
-                        contentTitle = "Stay Awake setting is On",
-                        contentText = "ADB connected - Stay Awake is On",
-                        mBigContentTitle = "Stay Awake setting is On",
-                        mBigText = "An ADB connection has been detected and the Stay awake setting has been turned on.\nThe setting will automatically be turned off when the ADB connection is lost",
-                        mSummaryText = "Stay Awake On"
+                        contentTitle = context.getString(R.string.awake_on_notification_title),
+                        contentText = context.getString(R.string.awake_on_notification_text),
+                        mBigContentTitle = context.getString(R.string.awake_on_notification_title),
+                        mBigText = context.getString(R.string.awake_on_notification_big_text),
+                        mSummaryText = context.getString(R.string.awake_on_notification_summary)
                     )
-                    "Turn off"
+                    context.getString(R.string.awake_on_notification_action_text)
                 } else {
                     notificationData.setData(
-                        contentTitle = "Stay Awake setting is Off",
-                        contentText = "ADB Connected - Stay Awake is Off",
-                        mBigContentTitle = "Stay Awake setting is Off",
-                        mBigText = "An ADB connection has been detected, but the Stay Stay Awake setting is currently off.",
-                        mSummaryText = "Stay Awake Off"
+                        contentTitle = context.getString(R.string.awake_off_notification_title),
+                        contentText = context.getString(R.string.awake_off_notification_text),
+                        mBigContentTitle = context.getString(R.string.awake_off_notification_title),
+                        mBigText = context.getString(R.string.awake_off_notification_big_text),
+                        mSummaryText = context.getString(R.string.awake_off_notification_summary)
                     )
-                    "Turn on"
+                    context.getString(R.string.awake_off_notification_action_text)
                 }
 
             val mainIntent: Intent = Intent(context, MainActivity::class.java)

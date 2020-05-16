@@ -61,7 +61,7 @@ class SettingsHelperUtil(private val applicationContext: Context?) {
     }
 
     fun setStayAwake(turnOn: Boolean): Boolean {
-        if (developerOptionsEnabled && usbDebuggingEnabled) {
+        if (developerOptionsEnabled && (!turnOn || usbDebuggingEnabled)) {
             return setInt(turnOn, Settings.Global.STAY_ON_WHILE_PLUGGED_IN,
                 ACandUSB,
                 OFF
@@ -106,8 +106,7 @@ class SettingsHelperUtil(private val applicationContext: Context?) {
     }
 
     private fun toast(turnOn: Boolean, name: String) {
-        var text: String
-        text = if (turnOn) {
+        val text: String = if (turnOn) {
             "on"
         } else {
             "off"

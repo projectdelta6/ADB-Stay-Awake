@@ -2,6 +2,7 @@ package com.duck.stayawakeadb.service
 
 import android.app.IntentService
 import android.content.Intent
+import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.duck.stayawakeadb.util.NotificationUtil
 import com.duck.stayawakeadb.util.SettingsHelperUtil
@@ -18,6 +19,7 @@ class NotificationActionService: IntentService("StayAwakeNotificationActionServi
                         ADBNotificationListener.INTENT_ACTION
                     ))
                 }
+                Log.v("testing","Updating notification from action Service")
                 NotificationUtil.updateStayAwakeNotification(this)
             }
         }
