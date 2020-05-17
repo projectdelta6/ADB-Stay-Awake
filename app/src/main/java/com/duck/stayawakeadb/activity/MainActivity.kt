@@ -120,8 +120,10 @@ class MainActivity : AppCompatActivity() {
                 }
                 if (settingsHelperUtil.usbDebuggingEnabled) {
                     setUpStayAwake()
+                    setUpNotificationSetting()
                 } else {
                     stayawake_group.visibility = View.GONE
+                    notification_group.visibility = View.GONE
                 }
             }// set listener
         } else {
@@ -129,6 +131,7 @@ class MainActivity : AppCompatActivity() {
             usbdebug_switch.setOnCheckedChangeListener(null)
         }
         setUpStayAwake()
+        setUpNotificationSetting()
     }
 
     private fun setUpStayAwake() {
@@ -140,13 +143,22 @@ class MainActivity : AppCompatActivity() {
                 if (!settingsHelperUtil.setStayAwake(isChecked)) {
                     stayawake_switch.isChecked = settingsHelperUtil.stayAwakeEnabled
                 }
-                Log.v("testing", "updating notification from MainActivity")
                 NotificationUtil.updateStayAwakeNotification(this)
             }// set listener
 
         } else {
             stayawake_group.visibility = View.GONE
             stayawake_switch.setOnCheckedChangeListener(null)
+        }
+    }
+
+    private fun setUpNotificationSetting() {
+        notification_switch.setOnCheckedChangeListener(null)
+        notification_switch.isChecked = settingsHelperUtil.showNotification
+        notification_group.visibility = View.VISIBLE
+        notification_switch.setOnCheckedChangeListener { buttonView, isChecked ->
+            settingsHelperUtil.showNotification = isChecked
+            NotificationUtil.updateStayAwakeNotification(this)
         }
     }
 

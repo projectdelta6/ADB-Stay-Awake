@@ -60,7 +60,6 @@ class ADBNotificationListener : android.service.notification.NotificationListene
             //todo:?
             Log.e("Error", "settingsHelperUtil.setStayAwake($turnOn) returned false")
         }
-        Log.v("testing", "Updating notification from listener, turnOn=$turnOn")
         NotificationUtil.updateStayAwakeNotification(this)
     }
 

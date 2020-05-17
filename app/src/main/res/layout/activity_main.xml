@@ -127,7 +127,7 @@
             app:layout_constraintTop_toBottomOf="@+id/tv_stayawake_lbl"
             app:layout_constraintStart_toStartOf="@+id/tv_stayawake_lbl"
             app:layout_constraintEnd_toStartOf="@id/switch_barrier"
-            app:layout_constraintBottom_toTopOf="@+id/tv_version"/>
+            app:layout_constraintBottom_toTopOf="@+id/tv_notification_lbl"/>
 
     <Switch
             android:id="@+id/stayawake_switch"
@@ -147,6 +147,51 @@
             android:visibility="gone"
             tools:visibility="visible"
             app:constraint_referenced_ids="tv_stayawake_lbl,tv_stayawake_des,stayawake_switch"/>
+
+    <TextView
+            android:id="@+id/tv_notification_lbl"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginStart="24dp"
+            android:text="Show Notification"
+            android:textSize="18sp"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:layout_constraintTop_toBottomOf="@id/tv_stayawake_des"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/switch_barrier"
+            app:layout_constraintBottom_toTopOf="@+id/tv_notification_des"
+            />
+
+    <TextView
+            android:id="@+id/tv_notification_des"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Toggle if the notification should be shown"
+            android:textSize="12sp"
+            app:layout_constraintTop_toBottomOf="@+id/tv_notification_lbl"
+            app:layout_constraintStart_toStartOf="@+id/tv_notification_lbl"
+            app:layout_constraintEnd_toStartOf="@id/switch_barrier"
+            app:layout_constraintBottom_toTopOf="@+id/tv_version"/>
+
+    <Switch
+            android:id="@+id/notification_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="13dp"
+            android:layout_marginEnd="24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tv_notification_lbl"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_notification_des"
+            app:layout_constraintStart_toEndOf="@+id/switch_barrier"/>
+
+    <androidx.constraintlayout.widget.Group
+            android:id="@+id/notification_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:visibility="visible"
+            app:constraint_referenced_ids="tv_notification_lbl,tv_notification_des,notification_switch"/>
 
     <TextView
             android:id="@+id/tv_version"

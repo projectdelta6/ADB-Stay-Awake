@@ -19,7 +19,6 @@ class NotificationActionService: IntentService("StayAwakeNotificationActionServi
                         ADBNotificationListener.INTENT_ACTION
                     ))
                 }
-                Log.v("testing","Updating notification from action Service")
                 NotificationUtil.updateStayAwakeNotification(this)
             }
         }

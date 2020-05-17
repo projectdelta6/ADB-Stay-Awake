@@ -72,9 +72,9 @@ object NotificationUtil {
     }
 
     fun updateStayAwakeNotification(context: Context) {
-        if (SettingsHelperUtil.ADBConnectionState) {
-            val settingsHelperUtil: SettingsHelperUtil =
-                SettingsHelperUtil(context.applicationContext)
+        val settingsHelperUtil: SettingsHelperUtil =
+            SettingsHelperUtil(context.applicationContext)
+        if(settingsHelperUtil.showNotification && SettingsHelperUtil.ADBConnectionState) {
 
             val actionText: String =
                 if (settingsHelperUtil.stayAwakeEnabled) {

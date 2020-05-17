@@ -5,26 +5,33 @@ import android.content.SharedPreferences
 import android.os.BatteryManager
 import android.provider.Settings
 import android.widget.Toast
+import com.duck.stayawakeadb.R
 
 /**
  * Created by Bradley Duck on 2019/02/18.
  */
-class SettingsHelperUtil(private val applicationContext: Context?) {
+class SettingsHelperUtil(private val applicationContext: Context) {
+
+    private val sharedPreferences: SharedPreferences
+        get() {
+            return applicationContext.getSharedPreferences(applicationContext.getString(R.string.preference_file_key),
+                Context.MODE_PRIVATE)
+        }
 
     val notificationPermissionGranted: Boolean
         get() {
             return Settings.Secure
                 .getString(
-                    applicationContext?.contentResolver,
+                    applicationContext.contentResolver,
                     "enabled_notification_listeners"
                 )
-                .contains(applicationContext?.packageName!!)
+                .contains(applicationContext.packageName!!)
         }
 
     val developerOptionsEnabled: Boolean
         get() {
             return Settings.Global.getInt(
-                applicationContext?.contentResolver,
+                applicationContext.contentResolver,
                 Settings.Global.DEVELOPMENT_SETTINGS_ENABLED
                 , 0
             ) == 1
@@ -33,7 +40,7 @@ class SettingsHelperUtil(private val applicationContext: Context?) {
     val usbDebuggingEnabled: Boolean
         get() {
             return Settings.Global.getInt(
-                applicationContext?.contentResolver,
+                applicationContext.contentResolver,
                 Settings.Global.ADB_ENABLED,
                 0
             ) == 1
@@ -42,7 +49,7 @@ class SettingsHelperUtil(private val applicationContext: Context?) {
     val stayAwakeValue: Int
         get() {
             return Settings.Global.getInt(
-                applicationContext?.contentResolver,
+                applicationContext.contentResolver,
                 Settings.Global.STAY_ON_WHILE_PLUGGED_IN,
                 0
             )
@@ -52,6 +59,20 @@ class SettingsHelperUtil(private val applicationContext: Context?) {
         get() {
             return stayAwakeValue != OFF
         }
+
+    var showNotification: Boolean
+        get() {
+            return sharedPreferences.getBoolean(NOTIFICATION_KEY, false)
+        }
+        set(value) {
+            editSharedPref { it.putBoolean(NOTIFICATION_KEY, value) }
+        }
+
+    private fun editSharedPref(action:(editor: SharedPreferences.Editor) -> Unit) {
+        val editor: SharedPreferences.Editor = sharedPreferences.edit()
+        action.invoke(editor)
+        editor.apply()
+    }
 
     fun setUSBDebugging(turnOn: Boolean): Boolean {
         if (developerOptionsEnabled) {
@@ -72,7 +93,7 @@ class SettingsHelperUtil(private val applicationContext: Context?) {
 
     private fun setInt(turnOn: Boolean, name: String, onValue: Int, offValue: Int): Boolean {
         val isOff = Settings.Global.getInt(
-            applicationContext?.contentResolver,
+            applicationContext.contentResolver,
             name,
             offValue
         ) == offValue
@@ -81,14 +102,14 @@ class SettingsHelperUtil(private val applicationContext: Context?) {
         try {
             if (turnOn && isOff) {
                 Settings.Global.putInt(
-                    applicationContext?.contentResolver,
+                    applicationContext.contentResolver,
                     name,
                     onValue
                 )
                 changed = true
             } else if (!isOff) {
                 Settings.Global.putInt(
-                    applicationContext?.contentResolver,
+                    applicationContext.contentResolver,
                     name,
                     offValue
                 )
@@ -175,6 +196,8 @@ class SettingsHelperUtil(private val applicationContext: Context?) {
         const val STTINGS: String = "android.settings."
         const val STTINGS_NOTIFICATION_LISTENER: String = "${STTINGS}ACTION_NOTIFICATION_LISTENER_SETTINGS"
         const val STTINGS_DEVELOPER: String = "${STTINGS}ACTION_APPLICATION_DEVELOPMENT_SETTINGS"
+
+        const val NOTIFICATION_KEY: String = "USE.NOTIFICATION"
 
         var ADBConnectionState: Boolean = false
     }
