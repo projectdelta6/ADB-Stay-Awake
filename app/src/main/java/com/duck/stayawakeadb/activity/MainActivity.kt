@@ -158,7 +158,6 @@ class MainActivity : AppCompatActivity() {
         notification_group.visibility = View.VISIBLE
         notification_switch.setOnCheckedChangeListener { buttonView, isChecked ->
             settingsHelperUtil.showNotification = isChecked
-            NotificationUtil.updateStayAwakeNotification(this)
         }
     }
 

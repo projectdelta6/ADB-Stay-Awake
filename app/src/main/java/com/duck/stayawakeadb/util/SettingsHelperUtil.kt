@@ -6,6 +6,9 @@ import android.os.BatteryManager
 import android.provider.Settings
 import android.widget.Toast
 import com.duck.stayawakeadb.R
+import java.util.concurrent.locks.LockSupport
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 /**
  * Created by Bradley Duck on 2019/02/18.
@@ -62,16 +65,23 @@ class SettingsHelperUtil(private val applicationContext: Context) {
 
     var showNotification: Boolean
         get() {
-            return sharedPreferences.getBoolean(NOTIFICATION_KEY, false)
+            sharedPrefLock.withLock {
+                return sharedPreferences.getBoolean(NOTIFICATION_KEY, false)
+            }
         }
         set(value) {
-            editSharedPref { it.putBoolean(NOTIFICATION_KEY, value) }
+            editSharedPref {
+                it.putBoolean(NOTIFICATION_KEY, value)
+            }
+            NotificationUtil.updateStayAwakeNotification(applicationContext)
         }
 
     private fun editSharedPref(action:(editor: SharedPreferences.Editor) -> Unit) {
-        val editor: SharedPreferences.Editor = sharedPreferences.edit()
-        action.invoke(editor)
-        editor.apply()
+        sharedPrefLock.withLock {
+            val editor: SharedPreferences.Editor = sharedPreferences.edit()
+            action.invoke(editor)
+            editor.apply()
+        }
     }
 
     fun setUSBDebugging(turnOn: Boolean): Boolean {
@@ -180,6 +190,7 @@ class SettingsHelperUtil(private val applicationContext: Context) {
 
     companion object {
         val Log = Logger()
+        val sharedPrefLock: ReentrantLock = ReentrantLock(true)
         const val OFF: Int = 0
         const val AC: Int = BatteryManager.BATTERY_PLUGGED_AC
         const val USB: Int = BatteryManager.BATTERY_PLUGGED_USB

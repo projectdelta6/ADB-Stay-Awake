@@ -116,6 +116,16 @@ object NotificationUtil {
                 togglePendingIntent
             ).build()
 
+            val disableNotificationIntent: Intent = Intent(context, NotificationActionService::class.java)
+                .setAction(NotificationActionService.ACTION_DISABLE_NOTIFICATION)
+            val disableNotificationPendingIntent: PendingIntent =
+                PendingIntent.getService(context, 0, disableNotificationIntent, 0)
+            val dissableNotificationAction: NotificationCompat.Action = NotificationCompat.Action.Builder(
+                R.drawable.ic_cancel_black,
+                "Don't show this notification",
+                disableNotificationPendingIntent
+            ).build()
+
 
             val notificationCompatBuilder: NotificationCompat.Builder = NotificationCompat.Builder(
                 context, notificationData.channelId
@@ -150,6 +160,7 @@ object NotificationUtil {
                     .setPriority(notificationData.priority)
                     .setVisibility(notificationData.channelLockscreenVisibility)
                     .addAction(toggleAction)
+                    .addAction(dissableNotificationAction)
                     .build()
 
             notification.flags = notification.flags or Notification.FLAG_NO_CLEAR or Notification.FLAG_ONGOING_EVENT

@@ -11,8 +11,8 @@ class NotificationActionService: IntentService("StayAwakeNotificationActionServi
 
     override fun onHandleIntent(intent: Intent?) {
         if(intent != null) {
+            val settingsHelperUtil: SettingsHelperUtil = SettingsHelperUtil(this)
             if(ACTION_TOGGLE_STAY_AWAKE == intent.action) {
-                val settingsHelperUtil: SettingsHelperUtil = SettingsHelperUtil(this)
                 if(settingsHelperUtil.setStayAwake(!settingsHelperUtil.stayAwakeEnabled)) {
                     //update the Activity UI if it is running...
                     LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(Intent(
@@ -20,11 +20,18 @@ class NotificationActionService: IntentService("StayAwakeNotificationActionServi
                     ))
                 }
                 NotificationUtil.updateStayAwakeNotification(this)
+            } else if(ACTION_DISABLE_NOTIFICATION == intent.action) {
+                settingsHelperUtil.showNotification = false
+                //update the Activity UI if it is running...
+                LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(Intent(
+                    ADBNotificationListener.INTENT_ACTION
+                ))
             }
         }
     }
 
     companion object {
+        const val ACTION_DISABLE_NOTIFICATION: String = "com.duck.stayawakeadb.action.disable.notification"
         const val ACTION_TOGGLE_STAY_AWAKE: String = "com.duck.stayawakeadb.action.toggle.stay.awake"
     }
 }
