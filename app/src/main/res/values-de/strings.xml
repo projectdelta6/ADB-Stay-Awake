@@ -1,0 +1,4 @@
+<resources>
+    <!-- ADB Notification text -->
+    <string name="adb_notification_title">USB-Debugging aktiviert</string>
+</resources>

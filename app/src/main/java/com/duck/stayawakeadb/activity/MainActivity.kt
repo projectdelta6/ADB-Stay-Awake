@@ -7,17 +7,18 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Html
 import android.text.Spanned
-import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.duck.stayawakeadb.*
+import com.duck.stayawakeadb.BuildConfig
+import com.duck.stayawakeadb.R
 import com.duck.stayawakeadb.constant.Constants.notificationData
+import com.duck.stayawakeadb.databinding.ActivityMainBinding
 import com.duck.stayawakeadb.service.ADBNotificationListener
-import com.duck.stayawakeadb.util.SettingsHelperUtil
 import com.duck.stayawakeadb.util.NotificationUtil
-import kotlinx.android.synthetic.main.activity_main.*
+import com.duck.stayawakeadb.util.SettingsHelperUtil
 
 
 class MainActivity : AppCompatActivity() {
@@ -32,6 +33,7 @@ class MainActivity : AppCompatActivity() {
      * ToDo: check if WRITE_SECURE_SETTINGS permission is granted and, if not, prompt to run command.
      */
 
+    private lateinit var binding: ActivityMainBinding
     private lateinit var settingsHelperUtil: SettingsHelperUtil
     private var receiverCache: BroadcastReceiver? = null
 
@@ -55,18 +57,20 @@ class MainActivity : AppCompatActivity() {
             this,
             notificationData
         )
-
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
+        setContentView(binding.root)
     }
 
     override fun onResume() {
         super.onResume()
         if (checkAndAskNotificationPermission()) {
             registerReceiver()
-            tv_version.text = fromHtml(getString(
-                R.string.app_version,
-                BuildConfig.VERSION_NAME
-            ))
+            binding.tvVersion.text = fromHtml(
+                getString(
+                    R.string.app_version,
+                    BuildConfig.VERSION_NAME
+                )
+            )
             setUpDevOpt()
         }
     }
@@ -79,14 +83,17 @@ class MainActivity : AppCompatActivity() {
     private fun checkAndAskNotificationPermission(): Boolean {
         if (!settingsHelperUtil.notificationPermissionGranted) {
             val dialogBuilder: AlertDialog.Builder = AlertDialog.Builder(this)
-            dialogBuilder.setMessage(getString(
-                R.string.request_notification_permission, getString(
-                    R.string.app_name
-                )))
-                .setPositiveButton("go to settings") { dialog, which ->
+            dialogBuilder.setMessage(
+                getString(
+                    R.string.request_notification_permission, getString(
+                        R.string.app_name
+                    )
+                )
+            )
+                .setPositiveButton(R.string.go_to_settings) { dialog, which ->
                     startActivity(Intent(SettingsHelperUtil.STTINGS_NOTIFICATION_LISTENER))
                 }
-                .setNegativeButton("Cancel") { dialog, which ->
+                .setNegativeButton(R.string.cancel) { dialog, which ->
                     dialog.cancel()
                 }
             val alertDialog: AlertDialog = dialogBuilder.create()
@@ -98,37 +105,38 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setUpDevOpt() {
-        devopt_switch.setOnClickListener(null)
-        devopt_switch.isChecked = settingsHelperUtil.developerOptionsEnabled
-        devopt_group.visibility = View.VISIBLE
+        binding.devoptSwitch.setOnClickListener(null)
+        binding.devoptSwitch.isChecked = settingsHelperUtil.developerOptionsEnabled
+        binding.devoptGroup.visibility = View.VISIBLE
         if (settingsHelperUtil.developerOptionsEnabled) {
-            tv_devopt_des.text = getString(R.string.dev_settings_on)
+            binding.tvDevoptDes.text = getString(R.string.dev_settings_on)
         } else {
-            tv_devopt_des.text = fromHtml(getString(R.string.dev_settings_off))
+            binding.tvDevoptDes.text = fromHtml(getString(R.string.dev_settings_off))
         }
         setUpUSBDebug()
     }
 
     private fun setUpUSBDebug() {
         if (settingsHelperUtil.developerOptionsEnabled) {
-            usbdebug_switch.setOnCheckedChangeListener(null)// clear listener
-            usbdebug_switch.isChecked = settingsHelperUtil.usbDebuggingEnabled// set checked state
-            usbdebug_group.visibility = View.VISIBLE
-            usbdebug_switch.setOnCheckedChangeListener { buttonView, isChecked ->
+            binding.usbdebugSwitch.setOnCheckedChangeListener(null)// clear listener
+            binding.usbdebugSwitch.isChecked =
+                settingsHelperUtil.usbDebuggingEnabled// set checked state
+            binding.usbdebugGroup.visibility = View.VISIBLE
+            binding.usbdebugSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
                 if (!settingsHelperUtil.setUSBDebugging(isChecked)) {
-                    usbdebug_switch.isChecked = settingsHelperUtil.usbDebuggingEnabled
+                    binding.usbdebugSwitch.isChecked = settingsHelperUtil.usbDebuggingEnabled
                 }
                 if (settingsHelperUtil.usbDebuggingEnabled) {
                     setUpStayAwake()
                     setUpNotificationSetting()
                 } else {
-                    stayawake_group.visibility = View.GONE
-                    notification_group.visibility = View.GONE
+                    binding.stayawakeGroup.visibility = View.GONE
+                    binding.notificationGroup.visibility = View.GONE
                 }
             }// set listener
         } else {
-            usbdebug_group.visibility = View.GONE
-            usbdebug_switch.setOnCheckedChangeListener(null)
+            binding.usbdebugGroup.visibility = View.GONE
+            binding.usbdebugSwitch.setOnCheckedChangeListener(null)
         }
         setUpStayAwake()
         setUpNotificationSetting()
@@ -136,27 +144,28 @@ class MainActivity : AppCompatActivity() {
 
     private fun setUpStayAwake() {
         if (settingsHelperUtil.usbDebuggingEnabled) {
-            stayawake_switch.setOnCheckedChangeListener(null)//clear listener
-            stayawake_switch.isChecked = settingsHelperUtil.stayAwakeEnabled//set checked state
-            stayawake_group.visibility = View.VISIBLE
-            stayawake_switch.setOnCheckedChangeListener { buttonView, isChecked ->
+            binding.stayawakeSwitch.setOnCheckedChangeListener(null)//clear listener
+            binding.stayawakeSwitch.isChecked =
+                settingsHelperUtil.stayAwakeEnabled//set checked state
+            binding.stayawakeGroup.visibility = View.VISIBLE
+            binding.stayawakeSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
                 if (!settingsHelperUtil.setStayAwake(isChecked)) {
-                    stayawake_switch.isChecked = settingsHelperUtil.stayAwakeEnabled
+                    binding.stayawakeSwitch.isChecked = settingsHelperUtil.stayAwakeEnabled
                 }
                 NotificationUtil.updateStayAwakeNotification(this)
             }// set listener
 
         } else {
-            stayawake_group.visibility = View.GONE
-            stayawake_switch.setOnCheckedChangeListener(null)
+            binding.stayawakeGroup.visibility = View.GONE
+            binding.stayawakeSwitch.setOnCheckedChangeListener(null)
         }
     }
 
     private fun setUpNotificationSetting() {
-        notification_switch.setOnCheckedChangeListener(null)
-        notification_switch.isChecked = settingsHelperUtil.showNotification
-        notification_group.visibility = View.VISIBLE
-        notification_switch.setOnCheckedChangeListener { buttonView, isChecked ->
+        binding.notificationSwitch.setOnCheckedChangeListener(null)
+        binding.notificationSwitch.isChecked = settingsHelperUtil.showNotification
+        binding.notificationGroup.visibility = View.VISIBLE
+        binding.notificationSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
             settingsHelperUtil.showNotification = isChecked
         }
     }

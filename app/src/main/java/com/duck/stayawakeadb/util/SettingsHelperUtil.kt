@@ -6,7 +6,6 @@ import android.os.BatteryManager
 import android.provider.Settings
 import android.widget.Toast
 import com.duck.stayawakeadb.R
-import java.util.concurrent.locks.LockSupport
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
@@ -189,7 +188,6 @@ class SettingsHelperUtil(private val applicationContext: Context) {
         }
 
     companion object {
-        val Log = Logger()
         val sharedPrefLock: ReentrantLock = ReentrantLock(true)
         const val OFF: Int = 0
         const val AC: Int = BatteryManager.BATTERY_PLUGGED_AC

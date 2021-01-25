@@ -14,7 +14,7 @@
             app:constraint_referenced_ids="devopt_switch,usbdebug_switch,stayawake_switch"
             app:barrierDirection="start"/>
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_devopt_lbl"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -29,7 +29,7 @@
             app:layout_constraintBottom_toTopOf="@+id/tv_devopt_des"
             app:layout_constraintVertical_bias="0.0"/>
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_devopt_des"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -38,9 +38,9 @@
             app:layout_constraintTop_toBottomOf="@+id/tv_devopt_lbl"
             app:layout_constraintStart_toStartOf="@+id/tv_devopt_lbl"
             app:layout_constraintEnd_toStartOf="@id/switch_barrier"
-            app:layout_constraintBottom_toTopOf="@+id/tv_usbdebug_lbl"/>
+            app:layout_constraintBottom_toTopOf="@+id/tv_usbdebug_lbl" />
 
-    <Switch
+    <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/devopt_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -50,7 +50,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/tv_devopt_lbl"
             app:layout_constraintBottom_toBottomOf="@+id/tv_devopt_des"
-            app:layout_constraintStart_toEndOf="@+id/switch_barrier"/>
+            app:layout_constraintStart_toEndOf="@+id/switch_barrier" />
 
     <androidx.constraintlayout.widget.Group
             android:id="@+id/devopt_group"
@@ -58,7 +58,7 @@
             android:layout_height="wrap_content"
             app:constraint_referenced_ids="tv_devopt_lbl,tv_devopt_des,devopt_switch"/>
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_usbdebug_lbl"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -70,10 +70,9 @@
             app:layout_constraintTop_toBottomOf="@id/tv_devopt_des"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/switch_barrier"
-            app:layout_constraintBottom_toTopOf="@+id/tv_usbdebug_des"
-    />
+            app:layout_constraintBottom_toTopOf="@+id/tv_usbdebug_des" />
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_usbdebug_des"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -82,9 +81,9 @@
             app:layout_constraintTop_toBottomOf="@+id/tv_usbdebug_lbl"
             app:layout_constraintStart_toStartOf="@+id/tv_usbdebug_lbl"
             app:layout_constraintEnd_toStartOf="@id/switch_barrier"
-            app:layout_constraintBottom_toTopOf="@+id/tv_stayawake_lbl"/>
+            app:layout_constraintBottom_toTopOf="@+id/tv_stayawake_lbl" />
 
-    <Switch
+    <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/usbdebug_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -93,7 +92,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/tv_usbdebug_lbl"
             app:layout_constraintBottom_toBottomOf="@+id/tv_usbdebug_des"
-            app:layout_constraintStart_toEndOf="@+id/switch_barrier"/>
+            app:layout_constraintStart_toEndOf="@+id/switch_barrier" />
 
     <androidx.constraintlayout.widget.Group
             android:id="@+id/usbdebug_group"
@@ -103,7 +102,7 @@
             tools:visibility="visible"
             app:constraint_referenced_ids="tv_usbdebug_lbl,tv_usbdebug_des,usbdebug_switch"/>
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_stayawake_lbl"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -118,7 +117,7 @@
             app:layout_constraintBottom_toTopOf="@+id/tv_stayawake_des"
     />
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_stayawake_des"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -127,9 +126,9 @@
             app:layout_constraintTop_toBottomOf="@+id/tv_stayawake_lbl"
             app:layout_constraintStart_toStartOf="@+id/tv_stayawake_lbl"
             app:layout_constraintEnd_toStartOf="@id/switch_barrier"
-            app:layout_constraintBottom_toTopOf="@+id/tv_notification_lbl"/>
+            app:layout_constraintBottom_toTopOf="@+id/tv_notification_lbl" />
 
-    <Switch
+    <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/stayawake_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -138,7 +137,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/tv_stayawake_lbl"
             app:layout_constraintBottom_toBottomOf="@+id/tv_stayawake_des"
-            app:layout_constraintStart_toEndOf="@+id/switch_barrier"/>
+            app:layout_constraintStart_toEndOf="@+id/switch_barrier" />
 
     <androidx.constraintlayout.widget.Group
             android:id="@+id/stayawake_group"
@@ -148,13 +147,13 @@
             tools:visibility="visible"
             app:constraint_referenced_ids="tv_stayawake_lbl,tv_stayawake_des,stayawake_switch"/>
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_notification_lbl"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:layout_marginStart="24dp"
-            android:text="Show Notification"
+            android:text="@string/show_notification"
             android:textSize="18sp"
             app:layout_constraintVertical_chainStyle="packed"
             app:layout_constraintTop_toBottomOf="@id/tv_stayawake_des"
@@ -163,18 +162,18 @@
             app:layout_constraintBottom_toTopOf="@+id/tv_notification_des"
             />
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_notification_des"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Toggle if the notification should be shown"
+            android:text="@string/toggle_if_the_notification_should_be_shown"
             android:textSize="12sp"
             app:layout_constraintTop_toBottomOf="@+id/tv_notification_lbl"
             app:layout_constraintStart_toStartOf="@+id/tv_notification_lbl"
             app:layout_constraintEnd_toStartOf="@id/switch_barrier"
-            app:layout_constraintBottom_toTopOf="@+id/tv_version"/>
+            app:layout_constraintBottom_toTopOf="@+id/tv_version" />
 
-    <Switch
+    <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/notification_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -183,7 +182,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/tv_notification_lbl"
             app:layout_constraintBottom_toBottomOf="@+id/tv_notification_des"
-            app:layout_constraintStart_toEndOf="@+id/switch_barrier"/>
+            app:layout_constraintStart_toEndOf="@+id/switch_barrier" />
 
     <androidx.constraintlayout.widget.Group
             android:id="@+id/notification_group"
@@ -193,7 +192,7 @@
             tools:visibility="visible"
             app:constraint_referenced_ids="tv_notification_lbl,tv_notification_des,notification_switch"/>
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_version"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

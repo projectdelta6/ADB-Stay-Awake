@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">Stay-Awake on ADB</string>
-    <string name="preference_file_key">com.duck.stay_awake_prefs_file</string>
-    <string name="app_version">&lt;u>v %s&lt;/u></string>
+    <string name="app_name" translatable="false">Stay-Awake on ADB</string>
+    <string name="preference_file_key" translatable="false">com.duck.stay_awake_prefs_file</string>
+    <string name="app_version" translatable="false">&lt;u>v %s&lt;/u></string>
     <string name="request_notification_permission">In order to listen for the \'ADB connected\' notification this app
         needs access to read notifications.\nPlease enable this permission for %s
     </string>
@@ -15,6 +15,10 @@
     <string name="developer_options_description">Whether developer options are enabled or not</string>
     <string name="usb_debugging">USB debugging</string>
     <string name="usb_debugging_description">Debug mode when USB is connected</string>
+    <string name="go_to_settings">go to settings</string>
+    <string name="cancel">Cancel</string>
+    <string name="show_notification">Show Notification</string>
+    <string name="toggle_if_the_notification_should_be_shown">Toggle if the notification should be shown</string>
     <!-- Notification strings -->
     <string name="awake_on_notification_title">Stay Awake setting is On</string>
     <string name="awake_on_notification_text">ADB connected - Stay Awake is On</string>
@@ -26,4 +30,6 @@
     <string name="awake_off_notification_big_text">An ADB connection has been detected, but the Stay Stay Awake setting is currently off.</string>
     <string name="awake_off_notification_summary">Stay Awake Off</string>
     <string name="awake_off_notification_action_text">Turn on</string>
+    <!-- ADB Notification text -->
+    <string name="adb_notification_title">USB debugging connected</string>
 </resources>
