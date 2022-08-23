@@ -1,4 +1,5 @@
 <resources>
     <!-- ADB Notification text -->
     <string name="adb_notification_title">USB-Debugging aktiviert</string>
+    <string name="adb_wifi_notification_title">Wireless debugging connected</string><!-- Todo: check translation -->
 </resources>

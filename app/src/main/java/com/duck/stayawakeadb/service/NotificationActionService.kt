@@ -2,13 +2,13 @@ package com.duck.stayawakeadb.service
 
 import android.app.IntentService
 import android.content.Intent
-import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.duck.stayawakeadb.util.NotificationUtil
 import com.duck.stayawakeadb.util.SettingsHelperUtil
 
 class NotificationActionService: IntentService("StayAwakeNotificationActionService") {
 
+    @Deprecated("Deprecated in Java")
     override fun onHandleIntent(intent: Intent?) {
         if(intent != null) {
             val settingsHelperUtil: SettingsHelperUtil = SettingsHelperUtil(this)

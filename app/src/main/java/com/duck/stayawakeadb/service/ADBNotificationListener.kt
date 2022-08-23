@@ -42,6 +42,10 @@ class ADBNotificationListener : android.service.notification.NotificationListene
             if (title.equals(
                     applicationContext.getString(R.string.adb_notification_title),
                     ignoreCase = true
+                ) ||
+                title.equals(
+                    applicationContext.getString(R.string.adb_wifi_notification_title),
+                    ignoreCase = true
                 )
             ) {
                 onPositiveCheck()

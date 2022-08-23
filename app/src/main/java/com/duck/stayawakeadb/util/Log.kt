@@ -18,6 +18,10 @@ object Log : FlexiLog() {
         return false //no reporting
     }
 
+    override fun shouldReportException(tr: Throwable): Boolean {
+        return false
+    }
+
     /**
      * Implement the actual reporting.
      *
