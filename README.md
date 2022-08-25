@@ -21,4 +21,5 @@ in the [APK folder](https://github.com/projectdelta6/ADB-Stay-Awake/tree/master/
 ## ToDo:
 
 * check if WRITE_SECURE_SETTINGS permission is granted and, if not, prompt to run command.
+* add Wireless Debugging setting toggle.
 * make it look sexy.
