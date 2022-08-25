@@ -13,6 +13,9 @@ android {
         versionCode 8
         versionName "0.8"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        /* Output File name */
+        archivesBaseName = "Stay-Awake_ADB-v${versionName}(${versionCode})"
     }
     buildFeatures {
         viewBinding true
