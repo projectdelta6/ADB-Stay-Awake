@@ -20,7 +20,7 @@ in the [APK folder](https://github.com/projectdelta6/ADB-Stay-Awake/tree/master/
 
 The APK is also available on [IzzyOnDroid](https://apt.izzysoft.de/fdroid/)
 
-![Release](https://img.shields.io/endpoint?url=https://apt.izzysoft.de/fdroid/api/v1/shield/com.duck.stayawakeadb)
+[![Release](https://img.shields.io/endpoint?url=https://apt.izzysoft.de/fdroid/api/v1/shield/com.duck.stayawakeadb)](https://apt.izzysoft.de/fdroid/index/apk/com.duck.stayawakeadb)
 
 ## ToDo:
 
