@@ -18,6 +18,10 @@ adb shell pm grant com.duck.stayawakeadb android.permission.WRITE_SECURE_SETTING
 For those that are not able, or willing, to build this app themselves I have put up a compiled APK
 in the [APK folder](https://github.com/projectdelta6/ADB-Stay-Awake/tree/master/APK).
 
+The APK is also available on [IzzyOnDroid](https://apt.izzysoft.de/fdroid/)
+
+![Release](https://img.shields.io/endpoint?url=https://apt.izzysoft.de/fdroid/api/v1/shield/com.duck.stayawakeadb)
+
 ## ToDo:
 
 * check if WRITE_SECURE_SETTINGS permission is granted and, if not, prompt to run command.
