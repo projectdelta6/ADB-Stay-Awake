@@ -1,14 +1,17 @@
 package com.duck.stayawakeadb.activity
 
+import android.Manifest
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.text.Html
 import android.text.Spanned
 import android.view.LayoutInflater
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -63,7 +66,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (checkAndAskNotificationPermission()) {
+        if (checkAndAskShowNotificationPermission() && checkAndAskNotificationPermission()) {
             registerReceiver()
             binding.tvVersion.text = fromHtml(
                 getString(
@@ -79,6 +82,35 @@ class MainActivity : AppCompatActivity() {
         super.onPause()
         unregisterReceiver()
     }
+
+    private fun checkAndAskShowNotificationPermission(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+                true
+            } else {
+                AlertDialog.Builder(this)
+                    .setTitle("Notification permission")
+                    .setMessage("In Order to show the sticky notification with controlls for turning Stay Awake setting on/off the app requires permission to show notifications.")
+                    .setPositiveButton("ok") { dialog, _ ->
+                        dialog.dismiss()
+                        permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    }
+                    .show()
+                false
+            }
+        } else {
+            true
+        }
+    }
+
+    private val permissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+
+            } else {
+
+            }
+        }
 
     private fun checkAndAskNotificationPermission(): Boolean {
         if (!settingsHelperUtil.notificationPermissionGranted) {

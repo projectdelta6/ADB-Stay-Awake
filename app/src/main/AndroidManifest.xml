@@ -3,6 +3,7 @@
           xmlns:tools="http://schemas.android.com/tools" package="com.duck.stayawakeadb">
 
     <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" tools:ignore="ProtectedPermissions"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
             android:allowBackup="true"

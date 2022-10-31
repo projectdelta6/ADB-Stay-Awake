@@ -99,32 +99,56 @@ object NotificationUtil {
 
             val mainIntent: Intent = Intent(context, MainActivity::class.java)
             mainIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            val notifyPendingIntent = PendingIntent.getActivity(
-                context,
-                0,
-                mainIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT
-            )
+            val notifyPendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                PendingIntent.getActivity(
+                    context,
+                    0,
+                    mainIntent,
+                    PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                )
+            } else {
+                PendingIntent.getActivity(
+                    context,
+                    0,
+                    mainIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT
+                )
+            }
 
             val toggleIntent: Intent = Intent(context, NotificationActionService::class.java)
                 .setAction(NotificationActionService.ACTION_TOGGLE_STAY_AWAKE)
             val togglePendingIntent: PendingIntent =
-                PendingIntent.getService(context, 0, toggleIntent, 0)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    PendingIntent.getService(context, 0, toggleIntent, PendingIntent.FLAG_IMMUTABLE)
+                } else {
+                    PendingIntent.getService(context, 0, toggleIntent, 0)
+                }
             val toggleAction: NotificationCompat.Action = NotificationCompat.Action.Builder(
                 R.drawable.ic_adb,
                 actionText,
                 togglePendingIntent
             ).build()
 
-            val disableNotificationIntent: Intent = Intent(context, NotificationActionService::class.java)
-                .setAction(NotificationActionService.ACTION_DISABLE_NOTIFICATION)
+            val disableNotificationIntent: Intent =
+                Intent(context, NotificationActionService::class.java)
+                    .setAction(NotificationActionService.ACTION_DISABLE_NOTIFICATION)
             val disableNotificationPendingIntent: PendingIntent =
-                PendingIntent.getService(context, 0, disableNotificationIntent, 0)
-            val dissableNotificationAction: NotificationCompat.Action = NotificationCompat.Action.Builder(
-                R.drawable.ic_cancel_black,
-                "Don't show this notification",
-                disableNotificationPendingIntent
-            ).build()
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    PendingIntent.getService(
+                        context,
+                        0,
+                        disableNotificationIntent,
+                        PendingIntent.FLAG_IMMUTABLE
+                    )
+                } else {
+                    PendingIntent.getService(context, 0, disableNotificationIntent, 0)
+                }
+            val dissableNotificationAction: NotificationCompat.Action =
+                NotificationCompat.Action.Builder(
+                    R.drawable.ic_cancel_black,
+                    "Don't show this notification",
+                    disableNotificationPendingIntent
+                ).build()
 
 
             val notificationCompatBuilder: NotificationCompat.Builder = NotificationCompat.Builder(
