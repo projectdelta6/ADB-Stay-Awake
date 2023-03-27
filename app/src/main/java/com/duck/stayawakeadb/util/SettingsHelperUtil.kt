@@ -26,8 +26,7 @@ class SettingsHelperUtil(private val applicationContext: Context) {
                 .getString(
                     applicationContext.contentResolver,
                     "enabled_notification_listeners"
-                )
-                .contains(applicationContext.packageName!!)
+                )?.contains(applicationContext.packageName!!) == true
         }
 
     val developerOptionsEnabled: Boolean

@@ -32,5 +32,6 @@
     <string name="awake_off_notification_action_text">Turn on</string>
     <!-- ADB Notification text -->
     <string name="adb_notification_title">USB debugging connected</string>
+    <string name="adb_notification_title_huawei">USB debugging started</string>
     <string name="adb_wifi_notification_title">Wireless debugging connected</string>
 </resources>

@@ -44,6 +44,10 @@ class ADBNotificationListener : android.service.notification.NotificationListene
                     ignoreCase = true
                 ) ||
                 title.equals(
+                    applicationContext.getString(R.string.adb_notification_title_huawei),
+                    ignoreCase = true
+                ) ||
+                title.equals(
                     applicationContext.getString(R.string.adb_wifi_notification_title),
                     ignoreCase = true
                 )

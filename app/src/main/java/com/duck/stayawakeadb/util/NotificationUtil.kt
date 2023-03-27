@@ -185,6 +185,7 @@ object NotificationUtil {
                     .setVisibility(notificationData.channelLockscreenVisibility)
                     .addAction(toggleAction)
                     .addAction(dissableNotificationAction)
+                    .setSilent(true)
                     .build()
 
             notification.flags = notification.flags or Notification.FLAG_NO_CLEAR or Notification.FLAG_ONGOING_EVENT
