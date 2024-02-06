@@ -15,6 +15,7 @@
  */
 package com.duck.stayawakeadb.util
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -71,6 +72,7 @@ object NotificationUtil {
         }
     }
 
+    @SuppressLint("MissingPermission")
     fun updateStayAwakeNotification(context: Context) {
         val settingsHelperUtil: SettingsHelperUtil =
             SettingsHelperUtil(context.applicationContext)
@@ -118,11 +120,7 @@ object NotificationUtil {
             val toggleIntent: Intent = Intent(context, NotificationActionService::class.java)
                 .setAction(NotificationActionService.ACTION_TOGGLE_STAY_AWAKE)
             val togglePendingIntent: PendingIntent =
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    PendingIntent.getService(context, 0, toggleIntent, PendingIntent.FLAG_IMMUTABLE)
-                } else {
-                    PendingIntent.getService(context, 0, toggleIntent, 0)
-                }
+                PendingIntent.getService(context, 0, toggleIntent, PendingIntent.FLAG_IMMUTABLE)
             val toggleAction: NotificationCompat.Action = NotificationCompat.Action.Builder(
                 R.drawable.ic_adb,
                 actionText,
@@ -133,16 +131,12 @@ object NotificationUtil {
                 Intent(context, NotificationActionService::class.java)
                     .setAction(NotificationActionService.ACTION_DISABLE_NOTIFICATION)
             val disableNotificationPendingIntent: PendingIntent =
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    PendingIntent.getService(
-                        context,
-                        0,
-                        disableNotificationIntent,
-                        PendingIntent.FLAG_IMMUTABLE
-                    )
-                } else {
-                    PendingIntent.getService(context, 0, disableNotificationIntent, 0)
-                }
+                PendingIntent.getService(
+                    context,
+                    0,
+                    disableNotificationIntent,
+                    PendingIntent.FLAG_IMMUTABLE
+                )
             val dissableNotificationAction: NotificationCompat.Action =
                 NotificationCompat.Action.Builder(
                     R.drawable.ic_cancel_black,
