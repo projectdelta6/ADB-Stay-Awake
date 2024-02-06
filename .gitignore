@@ -64,3 +64,5 @@ fastlane/screenshots
 fastlane/test_output
 fastlane/readme.md
 /Signing key
+/app/release
+/app/debug
