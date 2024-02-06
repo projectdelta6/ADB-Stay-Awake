@@ -176,16 +176,19 @@ class MainActivity : AppCompatActivity() {
 
     private fun setUpStayAwake() {
         if (settingsHelperUtil.usbDebuggingEnabled) {
-            binding.stayawakeSwitch.setOnCheckedChangeListener(null)//clear listener
+            //clear listener
+            binding.stayawakeSwitch.setOnCheckedChangeListener(null)
+            //set checked state
             binding.stayawakeSwitch.isChecked =
-                settingsHelperUtil.stayAwakeEnabled//set checked state
+                settingsHelperUtil.stayAwakeEnabled
             binding.stayawakeGroup.visibility = View.VISIBLE
-            binding.stayawakeSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
+            // set listener
+            binding.stayawakeSwitch.setOnCheckedChangeListener { _, isChecked ->
                 if (!settingsHelperUtil.setStayAwake(isChecked)) {
                     binding.stayawakeSwitch.isChecked = settingsHelperUtil.stayAwakeEnabled
                 }
                 NotificationUtil.updateStayAwakeNotification(this)
-            }// set listener
+            }
 
         } else {
             binding.stayawakeGroup.visibility = View.GONE
@@ -197,7 +200,7 @@ class MainActivity : AppCompatActivity() {
         binding.notificationSwitch.setOnCheckedChangeListener(null)
         binding.notificationSwitch.isChecked = settingsHelperUtil.showNotification
         binding.notificationGroup.visibility = View.VISIBLE
-        binding.notificationSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
+        binding.notificationSwitch.setOnCheckedChangeListener { _, isChecked ->
             settingsHelperUtil.showNotification = isChecked
         }
     }

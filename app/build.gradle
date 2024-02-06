@@ -5,13 +5,13 @@ plugins {
 }
 
 android {
-    compileSdkVersion 33
+    compileSdk 34
     defaultConfig {
         applicationId "com.duck.stayawakeadb"
-        minSdkVersion 21
-        targetSdkVersion 33
-        versionCode 10
-        versionName "0.10"
+        minSdk 21
+        targetSdk 34
+        versionCode 11
+        versionName "0.11"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         /* Output File name */
@@ -27,8 +27,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = '11'
-        targetCompatibility = '11'
+        sourceCompatibility = '17'
+        targetCompatibility = '17'
     }
     namespace 'com.duck.stayawakeadb'
 }
@@ -38,10 +38,10 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.1.0'
-    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.core:core-ktx:1.12.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test:runner:1.5.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    implementation 'com.github.projectdelta6:FlexiLogger:1.25'
+    implementation 'com.github.projectdelta6:FlexiLogger:1.29'
 }
