@@ -1,5 +1,58 @@
 <resources>
+    <!-- App and system strings -->
+    <string name="request_notification_permission">Um auf die \'ADB verbunden\'-Benachrichtigung zu hören, benötigt diese App
+        Zugriff auf Benachrichtigungen.\nBitte aktivieren Sie diese Berechtigung für %s
+    </string>
+    <string name="request_notification_permission_title">Benachrichtigungszugriff erforderlich</string>
+    <string name="dev_settings_on">Entwicklereinstellungen sind aktiviert.</string>
+    <string name="dev_settings_off">Entwicklereinstellungen sind &lt;u>nicht&lt;/u> aktiviert.</string>
+    <string name="service_name">ADB-Benachrichtigungs-Listener-Dienst</string>
+    <string name="stay_awake">Wach bleiben</string>
+    <string name="stay_awake_description">Bildschirm schläft nie während des Ladens</string>
+    <string name="developer_options">Entwickleroptionen</string>
+    <string name="developer_options_description">Ob Entwickleroptionen aktiviert sind oder nicht</string>
+    <string name="usb_debugging">USB-Debugging</string>
+    <string name="usb_debugging_description">Debug-Modus bei USB-Verbindung</string>
+    <string name="go_to_settings">zu den Einstellungen gehen</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="show_notification">Benachrichtigung anzeigen</string>
+    <string name="toggle_if_the_notification_should_be_shown">Umschalten, ob die Benachrichtigung angezeigt werden soll</string>
+    <!-- Notification strings -->
+    <string name="awake_on_notification_title">Stay Awake-Einstellung ist eingeschaltet</string>
+    <string name="awake_on_notification_text">ADB verbunden - Stay Awake ist eingeschaltet</string>
+    <string name="awake_on_notification_big_text">Eine ADB-Verbindung wurde erkannt und die Stay Awake-Einstellung wurde eingeschaltet.\nDie Einstellung wird automatisch ausgeschaltet, wenn die ADB-Verbindung verloren geht</string>
+    <string name="awake_on_notification_summary">Stay Awake eingeschaltet</string>
+    <string name="awake_on_notification_action_text">Ausschalten</string>
+    <string name="awake_off_notification_title">Stay Awake-Einstellung ist ausgeschaltet</string>
+    <string name="awake_off_notification_text">ADB verbunden - Stay Awake ist ausgeschaltet</string>
+    <string name="awake_off_notification_big_text">Eine ADB-Verbindung wurde erkannt, aber die Stay Awake-Einstellung ist derzeit ausgeschaltet.</string>
+    <string name="awake_off_notification_summary">Stay Awake ausgeschaltet</string>
+    <string name="awake_off_notification_action_text">Einschalten</string>
     <!-- ADB Notification text -->
     <string name="adb_notification_title">USB-Debugging aktiviert</string>
-    <string name="adb_wifi_notification_title">Wireless debugging connected</string><!-- Todo: check translation -->
+    <string name="adb_notification_title_huawei">USB-Debugging gestartet</string>
+    <string name="adb_wifi_notification_title">Drahtloses Debugging verbunden</string>
+    <!-- New UI strings -->
+    <string name="open_developer_options">Entwickleroptionen öffnen</string>
+    <string name="auto_toggle_stay_awake">Automatisches Umschalten von Stay Awake</string>
+    <string name="auto_toggle_stay_awake_description">Automatisch Stay Awake ein-/ausschalten, wenn ADB sich verbindet/trennt</string>
+    <string name="wireless_debugging">Drahtloses Debugging</string>
+    <string name="wireless_debugging_description">Debug-Modus bei drahtloser ADB-Verbindung</string>
+    <string name="unable_to_open_developer_options">Entwickleroptionen können nicht geöffnet werden. Bitte navigieren Sie manuell zu Einstellungen > Entwickleroptionen</string>
+    <string name="permission_required_title">Berechtigung erforderlich</string>
+    <string name="permission_required_message">Diese App benötigt die WRITE_SECURE_SETTINGS-Berechtigung, um ordnungsgemäß zu funktionieren.\n\nUm diese Berechtigung zu erteilen, verbinden Sie Ihr Gerät mit einem Computer und führen Sie den folgenden ADB-Befehl aus:\n\nadb shell pm grant com.duck.stayawakeadb android.permission.WRITE_SECURE_SETTINGS\n\nDieser Befehl kann nicht vom Gerät selbst ausgeführt werden.</string>
+    <string name="copy_command">Befehl kopieren</string>
+    <string name="command_copied">Befehl: adb shell pm grant com.duck.stayawakeadb android.permission.WRITE_SECURE_SETTINGS</string>
+    <!-- Stay Awake status strings -->
+    <string name="stay_awake_off">Stay Awake ist aus.</string>
+    <string name="stay_awake_ac_only">Stay Awake ist nur für AC eingeschaltet.</string>
+    <string name="stay_awake_usb_only">Stay Awake ist nur für USB eingeschaltet.</string>
+    <string name="stay_awake_wireless_only">Stay Awake ist nur für drahtloses Laden eingeschaltet.</string>
+    <string name="stay_awake_ac_usb">Stay Awake ist nur für AC und USB eingeschaltet.</string>
+    <string name="stay_awake_ac_wireless">Stay Awake ist nur für AC und drahtloses Laden eingeschaltet.</string>
+    <string name="stay_awake_usb_wireless">Stay Awake ist nur für USB und drahtloses Laden eingeschaltet.</string>
+    <string name="stay_awake_all">Stay Awake ist für AC, USB und drahtloses Laden eingeschaltet.</string>
+    <!-- Status strings -->
+    <string name="enabled">Aktiviert</string>
+    <string name="disabled">Deaktiviert</string>
 </resources>

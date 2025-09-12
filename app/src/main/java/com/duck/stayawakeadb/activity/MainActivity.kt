@@ -7,24 +7,56 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.text.Html
-import android.text.Spanned
-import android.view.LayoutInflater
-import android.view.View
+import android.provider.Settings
+import android.util.Log
+import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.duck.stayawakeadb.BuildConfig
 import com.duck.stayawakeadb.R
 import com.duck.stayawakeadb.constant.Constants.notificationData
-import com.duck.stayawakeadb.databinding.ActivityMainBinding
 import com.duck.stayawakeadb.service.ADBNotificationListener
+import com.duck.stayawakeadb.ui.theme.ADBStayAwakeTheme
 import com.duck.stayawakeadb.util.NotificationUtil
 import com.duck.stayawakeadb.util.SettingsHelperUtil
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
 
     /*
      * The WRITE_SECURE_SETTINGS is a System permission that is not granted to any non-System app. so to get around this
@@ -32,11 +64,6 @@ class MainActivity : AppCompatActivity() {
      * permission: 'adb shell pm grant com.duck.stayawakeadb android.permission.WRITE_SECURE_SETTINGS'
      */
 
-    /*
-     * ToDo: check if WRITE_SECURE_SETTINGS permission is granted and, if not, prompt to run command.
-     */
-
-    private lateinit var binding: ActivityMainBinding
     private lateinit var settingsHelperUtil: SettingsHelperUtil
     private var receiverCache: BroadcastReceiver? = null
 
@@ -45,7 +72,8 @@ class MainActivity : AppCompatActivity() {
             if (receiverCache == null) {
                 receiverCache = object : BroadcastReceiver() {
                     override fun onReceive(context: Context, intent: Intent) {
-                        setUpDevOpt()
+                        // Broadcasts are now handled in the Compose MainScreen
+                        Log.d("MainActivity", "Broadcast received in Activity: ${intent.action}")
                     }
                 }
             }
@@ -60,21 +88,18 @@ class MainActivity : AppCompatActivity() {
             this,
             notificationData
         )
-        binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
-        setContentView(binding.root)
+
+        setContent {
+            ADBStayAwakeTheme {
+                MainScreen(settingsHelperUtil)
+            }
+        }
     }
 
     override fun onResume() {
         super.onResume()
         if (checkAndAskShowNotificationPermission() && checkAndAskNotificationPermission()) {
             registerReceiver()
-            binding.tvVersion.text = fromHtml(
-                getString(
-                    R.string.app_version,
-                    BuildConfig.VERSION_NAME
-                )
-            )
-            setUpDevOpt()
         }
     }
 
@@ -106,9 +131,9 @@ class MainActivity : AppCompatActivity() {
     private val permissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
-
+                // Permission granted
             } else {
-
+                // Permission denied
             }
         }
 
@@ -122,11 +147,11 @@ class MainActivity : AppCompatActivity() {
                     )
                 )
             )
-                .setPositiveButton(R.string.go_to_settings) { dialog, which ->
+                .setPositiveButton(R.string.go_to_settings) { _, _ ->
                     startActivity(Intent(SettingsHelperUtil.STTINGS_NOTIFICATION_LISTENER))
                 }
-                .setNegativeButton(R.string.cancel) { dialog, which ->
-                    dialog.cancel()
+                .setNegativeButton(R.string.cancel) { _, _ ->
+                    // Do nothing
                 }
             val alertDialog: AlertDialog = dialogBuilder.create()
             alertDialog.setTitle(R.string.request_notification_permission_title)
@@ -134,75 +159,6 @@ class MainActivity : AppCompatActivity() {
             return false
         }
         return true
-    }
-
-    private fun setUpDevOpt() {
-        binding.devoptSwitch.setOnClickListener(null)
-        binding.devoptSwitch.isChecked = settingsHelperUtil.developerOptionsEnabled
-        binding.devoptGroup.visibility = View.VISIBLE
-        if (settingsHelperUtil.developerOptionsEnabled) {
-            binding.tvDevoptDes.text = getString(R.string.dev_settings_on)
-        } else {
-            binding.tvDevoptDes.text = fromHtml(getString(R.string.dev_settings_off))
-        }
-        setUpUSBDebug()
-    }
-
-    private fun setUpUSBDebug() {
-        if (settingsHelperUtil.developerOptionsEnabled) {
-            binding.usbdebugSwitch.setOnCheckedChangeListener(null)// clear listener
-            binding.usbdebugSwitch.isChecked =
-                settingsHelperUtil.usbDebuggingEnabled// set checked state
-            binding.usbdebugGroup.visibility = View.VISIBLE
-            binding.usbdebugSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
-                if (!settingsHelperUtil.setUSBDebugging(isChecked)) {
-                    binding.usbdebugSwitch.isChecked = settingsHelperUtil.usbDebuggingEnabled
-                }
-                if (settingsHelperUtil.usbDebuggingEnabled) {
-                    setUpStayAwake()
-                    setUpNotificationSetting()
-                } else {
-                    binding.stayawakeGroup.visibility = View.GONE
-                    binding.notificationGroup.visibility = View.GONE
-                }
-            }// set listener
-        } else {
-            binding.usbdebugGroup.visibility = View.GONE
-            binding.usbdebugSwitch.setOnCheckedChangeListener(null)
-        }
-        setUpStayAwake()
-        setUpNotificationSetting()
-    }
-
-    private fun setUpStayAwake() {
-        if (settingsHelperUtil.usbDebuggingEnabled) {
-            //clear listener
-            binding.stayawakeSwitch.setOnCheckedChangeListener(null)
-            //set checked state
-            binding.stayawakeSwitch.isChecked =
-                settingsHelperUtil.stayAwakeEnabled
-            binding.stayawakeGroup.visibility = View.VISIBLE
-            // set listener
-            binding.stayawakeSwitch.setOnCheckedChangeListener { _, isChecked ->
-                if (!settingsHelperUtil.setStayAwake(isChecked)) {
-                    binding.stayawakeSwitch.isChecked = settingsHelperUtil.stayAwakeEnabled
-                }
-                NotificationUtil.updateStayAwakeNotification(this)
-            }
-
-        } else {
-            binding.stayawakeGroup.visibility = View.GONE
-            binding.stayawakeSwitch.setOnCheckedChangeListener(null)
-        }
-    }
-
-    private fun setUpNotificationSetting() {
-        binding.notificationSwitch.setOnCheckedChangeListener(null)
-        binding.notificationSwitch.isChecked = settingsHelperUtil.showNotification
-        binding.notificationGroup.visibility = View.VISIBLE
-        binding.notificationSwitch.setOnCheckedChangeListener { _, isChecked ->
-            settingsHelperUtil.showNotification = isChecked
-        }
     }
 
     private fun registerReceiver() {
@@ -215,12 +171,336 @@ class MainActivity : AppCompatActivity() {
     private fun unregisterReceiver() {
         LocalBroadcastManager.getInstance(applicationContext).unregisterReceiver(receiver)
     }
+}
 
-    private fun fromHtml(string: String): Spanned {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Html.fromHtml(string, Html.FROM_HTML_MODE_LEGACY)
-        } else {
-            Html.fromHtml(string)
+@Composable
+fun MainScreen(settingsHelperUtil: SettingsHelperUtil) {
+    val context = LocalContext.current
+    val scrollState = rememberScrollState()
+
+    var developerOptionsEnabled by remember { mutableStateOf(settingsHelperUtil.developerOptionsEnabled) }
+    var usbDebuggingEnabled by remember { mutableStateOf(settingsHelperUtil.usbDebuggingEnabled) }
+    var stayAwakeEnabled by remember { mutableStateOf(settingsHelperUtil.stayAwakeEnabled) }
+    var wirelessDebuggingEnabled by remember { mutableStateOf(settingsHelperUtil.wirelessDebuggingEnabled) }
+    var showNotification by remember { mutableStateOf(settingsHelperUtil.showNotification) }
+    var autoToggleStayAwake by remember { mutableStateOf(settingsHelperUtil.autoToggleStayAwake) }
+    var writeSecureSettingsGranted by remember { mutableStateOf(settingsHelperUtil.writeSecureSettingsPermissionGranted) }
+
+    // Listen for broadcasts to update UI state
+    DisposableEffect(Unit) {
+        val broadcastReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                Log.d("MainScreen", "Received broadcast: ${intent.action}")
+                // Update all state variables to reflect current system state
+                developerOptionsEnabled = settingsHelperUtil.developerOptionsEnabled
+                usbDebuggingEnabled = settingsHelperUtil.usbDebuggingEnabled
+                stayAwakeEnabled = settingsHelperUtil.stayAwakeEnabled
+                wirelessDebuggingEnabled = settingsHelperUtil.wirelessDebuggingEnabled
+                showNotification = settingsHelperUtil.showNotification
+                autoToggleStayAwake = settingsHelperUtil.autoToggleStayAwake
+                writeSecureSettingsGranted = settingsHelperUtil.writeSecureSettingsPermissionGranted
+            }
+        }
+
+        LocalBroadcastManager.getInstance(context).registerReceiver(
+            broadcastReceiver,
+            ADBNotificationListener.intentFilter
+        )
+
+        onDispose {
+            LocalBroadcastManager.getInstance(context).unregisterReceiver(broadcastReceiver)
         }
     }
+
+    @Composable
+    fun getStayAwakeDescription(stayAwakeValue: Int): String {
+        return when (stayAwakeValue) {
+            0 -> stringResource(R.string.stay_awake_off)
+            1 -> stringResource(R.string.stay_awake_ac_only)
+            2 -> stringResource(R.string.stay_awake_usb_only)
+            4 -> stringResource(R.string.stay_awake_wireless_only)
+            3 -> stringResource(R.string.stay_awake_ac_usb) // AC + USB = 1 + 2 = 3
+            5 -> stringResource(R.string.stay_awake_ac_wireless) // AC + Wireless = 1 + 4 = 5
+            6 -> stringResource(R.string.stay_awake_usb_wireless) // USB + Wireless = 2 + 4 = 6
+            7 -> stringResource(R.string.stay_awake_all) // AC + USB + Wireless = 1 + 2 + 4 = 7
+            else -> stringResource(R.string.stay_awake_off)
+        }
+    }
+
+    // Permission check UI
+    if (!writeSecureSettingsGranted) {
+        PermissionRequiredDialog(
+            onGrantPermission = {
+                // Dialog is now handled internally by PermissionRequiredDialog
+            }
+        )
+    }
+
+    Scaffold(
+        modifier = Modifier
+            .fillMaxSize()
+            .windowInsetsPadding(WindowInsets.systemBars),
+        content = { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(16.dp)
+                    .verticalScroll(scrollState),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = stringResource(R.string.app_name),
+                    style = MaterialTheme.typography.headlineMedium,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.padding(bottom = 24.dp)
+                )
+
+                // Version info
+                Text(
+                    text = "v${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
+                    style = MaterialTheme.typography.bodySmall,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(bottom = 24.dp)
+                )
+
+                // Developer Options Section
+                SettingSection(
+                    title = stringResource(R.string.developer_options),
+                    description = if (developerOptionsEnabled)
+                        stringResource(R.string.dev_settings_on)
+                    else
+                        stringResource(R.string.dev_settings_off),
+                    checked = developerOptionsEnabled,
+                    onCheckedChange = null, // Read-only
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                // Open Developer Options Button
+                if (developerOptionsEnabled) {
+                    val errorMessage = stringResource(R.string.unable_to_open_developer_options)
+                    Button(
+                        onClick = {
+                            val intent =
+                                Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS).apply {
+                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                }
+                            if (intent.resolveActivity(context.packageManager) != null) {
+                                context.startActivity(intent)
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    errorMessage,
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp)
+                    ) {
+                        Text(stringResource(R.string.open_developer_options))
+                    }
+                }
+
+                // Auto Toggle Section
+                if (developerOptionsEnabled && (usbDebuggingEnabled || wirelessDebuggingEnabled)) {
+                    SettingSection(
+                        title = stringResource(R.string.auto_toggle_stay_awake),
+                        description = stringResource(R.string.auto_toggle_stay_awake_description),
+                        checked = autoToggleStayAwake,
+                        onCheckedChange = { checked ->
+                            settingsHelperUtil.autoToggleStayAwake = checked
+                            autoToggleStayAwake = checked
+                        },
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                }
+
+                // USB Debugging Section
+                if (developerOptionsEnabled) {
+                    SettingSection(
+                        title = stringResource(R.string.usb_debugging),
+                        description = stringResource(R.string.usb_debugging_description),
+                        checked = usbDebuggingEnabled,
+                        onCheckedChange = { checked ->
+                            if (settingsHelperUtil.setUSBDebugging(checked)) {
+                                usbDebuggingEnabled = checked
+                                if (checked) {
+                                    stayAwakeEnabled = settingsHelperUtil.stayAwakeEnabled
+                                }
+                            } else {
+                                usbDebuggingEnabled = settingsHelperUtil.usbDebuggingEnabled
+                            }
+                        },
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                }
+
+                // Wireless Debugging Section
+                if (developerOptionsEnabled) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.wireless_debugging),
+                                        style = MaterialTheme.typography.titleMedium
+                                    )
+                                    Text(
+                                        text = stringResource(R.string.wireless_debugging_description),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                Switch(
+                                    checked = wirelessDebuggingEnabled,
+                                    onCheckedChange = { checked ->
+                                        if (settingsHelperUtil.setWirelessDebugging(checked)) {
+                                            wirelessDebuggingEnabled = checked
+                                        } else {
+                                            wirelessDebuggingEnabled =
+                                                settingsHelperUtil.wirelessDebuggingEnabled
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Stay Awake Section
+                if (developerOptionsEnabled && usbDebuggingEnabled) {
+                    SettingSection(
+                        title = stringResource(R.string.stay_awake),
+                        description = getStayAwakeDescription(settingsHelperUtil.stayAwakeValue),
+                        checked = stayAwakeEnabled,
+                        onCheckedChange = { checked ->
+                            if (settingsHelperUtil.setStayAwake(checked)) {
+                                stayAwakeEnabled = checked
+                                NotificationUtil.updateStayAwakeNotification(context)
+                            } else {
+                                stayAwakeEnabled = settingsHelperUtil.stayAwakeEnabled
+                            }
+                        },
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                }
+
+                // Notification Section
+                if (developerOptionsEnabled && usbDebuggingEnabled) {
+                    SettingSection(
+                        title = stringResource(R.string.show_notification),
+                        description = stringResource(R.string.toggle_if_the_notification_should_be_shown),
+                        checked = showNotification,
+                        onCheckedChange = { checked ->
+                            settingsHelperUtil.showNotification = checked
+                            showNotification = checked
+                        },
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.weight(1f))
+            }
+        }
+    )
+}
+
+@Composable
+fun SettingSection(
+    title: String,
+    description: String,
+    checked: Boolean,
+    onCheckedChange: ((Boolean) -> Unit)?,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = description,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            if (onCheckedChange != null) {
+                Switch(
+                    checked = checked,
+                    onCheckedChange = onCheckedChange
+                )
+            } else {
+                Text(
+                    text = if (checked) stringResource(R.string.enabled) else stringResource(R.string.disabled),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = if (checked)
+                        MaterialTheme.colorScheme.primary
+                    else
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun PermissionRequiredDialog(onGrantPermission: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = { },
+        title = {
+            Text(
+                stringResource(R.string.permission_required_title),
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        },
+        text = {
+            Text(
+                stringResource(R.string.permission_required_message),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = onGrantPermission) {
+                Text(
+                    text = stringResource(R.string.cancel),
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        },
+        containerColor = MaterialTheme.colorScheme.surface,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        textContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+    )
 }

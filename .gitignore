@@ -66,3 +66,4 @@ fastlane/readme.md
 /Signing key
 /app/release
 /app/debug
+/.vscode/settings.json

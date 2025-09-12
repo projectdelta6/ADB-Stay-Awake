@@ -29,6 +29,21 @@ class SettingsHelperUtil(private val applicationContext: Context) {
                 )?.contains(applicationContext.packageName!!) == true
         }
 
+    val writeSecureSettingsPermissionGranted: Boolean
+        get() {
+            return try {
+                // Try to read a secure setting that requires WRITE_SECURE_SETTINGS
+                Settings.Global.getInt(
+                    applicationContext.contentResolver,
+                    Settings.Global.ADB_ENABLED,
+                    -1
+                )
+                true
+            } catch (e: SecurityException) {
+                false
+            }
+        }
+
     val developerOptionsEnabled: Boolean
         get() {
             return Settings.Global.getInt(
@@ -45,6 +60,20 @@ class SettingsHelperUtil(private val applicationContext: Context) {
                 Settings.Global.ADB_ENABLED,
                 0
             ) == 1
+        }
+
+    val wirelessDebuggingEnabled: Boolean
+        get() {
+            return try {
+                Settings.Global.getInt(
+                    applicationContext.contentResolver,
+                    "adb_wifi_enabled",
+                    0
+                ) == 1
+            } catch (e: Exception) {
+                // Wireless debugging might not be available on all devices/versions
+                false
+            }
         }
 
     val stayAwakeValue: Int
@@ -74,6 +103,21 @@ class SettingsHelperUtil(private val applicationContext: Context) {
             NotificationUtil.updateStayAwakeNotification(applicationContext)
         }
 
+    var autoToggleStayAwake: Boolean
+        get() {
+            sharedPrefLock.withLock {
+                return sharedPreferences.getBoolean(
+                    AUTO_TOGGLE_KEY,
+                    true
+                ) // Default to true for existing users
+            }
+        }
+        set(value) {
+            editSharedPref {
+                it.putBoolean(AUTO_TOGGLE_KEY, value)
+            }
+        }
+
     private fun editSharedPref(action:(editor: SharedPreferences.Editor) -> Unit) {
         sharedPrefLock.withLock {
             val editor: SharedPreferences.Editor = sharedPreferences.edit()
@@ -89,13 +133,36 @@ class SettingsHelperUtil(private val applicationContext: Context) {
         return false
     }
 
-    fun setStayAwake(turnOn: Boolean): Boolean {
-        if (developerOptionsEnabled && (!turnOn || usbDebuggingEnabled)) {
-            return setInt(turnOn, Settings.Global.STAY_ON_WHILE_PLUGGED_IN,
-                ACandUSB,
-                OFF
-            )
+    fun setWirelessDebugging(turnOn: Boolean): Boolean {
+        return try {
+            if (developerOptionsEnabled) {
+                setInt(turnOn, "adb_wifi_enabled", 1, 0)
+            } else {
+                false
+            }
+        } catch (e: Exception) {
+            // Wireless debugging might not be available on all devices/versions
+            false
         }
+    }
+
+    fun setStayAwake(turnOn: Boolean): Boolean {
+        Log.d(
+            "SettingsHelperUtil",
+            "setStayAwake called with turnOn=$turnOn, developerOptionsEnabled=$developerOptionsEnabled, usbDebuggingEnabled=$usbDebuggingEnabled, wirelessDebuggingEnabled=$wirelessDebuggingEnabled"
+        )
+        if (developerOptionsEnabled && (!turnOn || usbDebuggingEnabled || wirelessDebuggingEnabled)) {
+            // Determine the appropriate stay awake value based on enabled debugging types
+            val onValue = when {
+                usbDebuggingEnabled && wirelessDebuggingEnabled -> ACandUSBandWIRELESS
+                usbDebuggingEnabled -> ACandUSB
+                wirelessDebuggingEnabled -> ACandWIRELESS
+                else -> ACandUSB // fallback
+            }
+            Log.d("SettingsHelperUtil", "Setting stay awake to onValue=$onValue")
+            return setInt(turnOn, Settings.Global.STAY_ON_WHILE_PLUGGED_IN, onValue, OFF)
+        }
+        Log.d("SettingsHelperUtil", "setStayAwake returning false - conditions not met")
         return false
     }
 
@@ -106,9 +173,14 @@ class SettingsHelperUtil(private val applicationContext: Context) {
             offValue
         ) == offValue
 
+        Log.d(
+            "SettingsHelperUtil",
+            "setInt: turnOn=$turnOn, name=$name, onValue=$onValue, offValue=$offValue, isOff=$isOff"
+        )
         var changed: Boolean = false
         try {
             if (turnOn && isOff) {
+                Log.d("SettingsHelperUtil", "Setting $name to $onValue")
                 Settings.Global.putInt(
                     applicationContext.contentResolver,
                     name,
@@ -116,20 +188,24 @@ class SettingsHelperUtil(private val applicationContext: Context) {
                 )
                 changed = true
             } else if (!isOff) {
+                Log.d("SettingsHelperUtil", "Setting $name to $offValue")
                 Settings.Global.putInt(
                     applicationContext.contentResolver,
                     name,
                     offValue
                 )
                 changed = true
+            } else {
+                Log.d("SettingsHelperUtil", "No change needed for $name")
             }
         } catch (e: SecurityException) {
-            Log.e(this, "needs permission: ", e)
+            Log.e("SettingsHelperUtil", "SecurityException setting $name: ", e)
             //todo: needs permission command
         } finally {
             /*if (changed) {
                 toast(turnOn, name)
             }*/
+            Log.d("SettingsHelperUtil", "setInt returning changed=$changed")
             return changed
         }
     }
@@ -147,6 +223,7 @@ class SettingsHelperUtil(private val applicationContext: Context) {
         ).show()
     }
 
+    /*
     val stayAwakeString: String
         get() {
             when (stayAwakeValue) {
@@ -185,6 +262,7 @@ class SettingsHelperUtil(private val applicationContext: Context) {
             }
             return "none"
         }
+    */
 
     companion object {
         val sharedPrefLock: ReentrantLock = ReentrantLock(true)
@@ -204,8 +282,11 @@ class SettingsHelperUtil(private val applicationContext: Context) {
         const val STTINGS: String = "android.settings."
         const val STTINGS_NOTIFICATION_LISTENER: String = "${STTINGS}ACTION_NOTIFICATION_LISTENER_SETTINGS"
         const val STTINGS_DEVELOPER: String = "${STTINGS}ACTION_APPLICATION_DEVELOPMENT_SETTINGS"
+        const val STTINGS_WIRELESS_DEBUG: String =
+            "${STTINGS}ACTION_APPLICATION_DEVELOPMENT_SETTINGS" // Wireless debugging is in developer settings
 
         const val NOTIFICATION_KEY: String = "USE.NOTIFICATION"
+        const val AUTO_TOGGLE_KEY: String = "AUTO_TOGGLE_STAY_AWAKE"
 
         var ADBConnectionState: Boolean = false
     }

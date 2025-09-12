@@ -34,4 +34,27 @@
     <string name="adb_notification_title">USB debugging connected</string>
     <string name="adb_notification_title_huawei">USB debugging started</string>
     <string name="adb_wifi_notification_title">Wireless debugging connected</string>
+    <!-- New UI strings -->
+    <string name="open_developer_options">Open Developer Options</string>
+    <string name="auto_toggle_stay_awake">Auto Toggle Stay Awake</string>
+    <string name="auto_toggle_stay_awake_description">Automatically turn stay awake on/off when ADB connects/disconnects</string>
+    <string name="wireless_debugging">Wireless Debugging</string>
+    <string name="wireless_debugging_description">Debug mode when wireless ADB is connected</string>
+    <string name="unable_to_open_developer_options">Unable to open Developer Options. Please navigate manually to Settings > Developer Options</string>
+    <string name="permission_required_title">Permission Required</string>
+    <string name="permission_required_message">This app requires WRITE_SECURE_SETTINGS permission to function properly.\n\nTo grant this permission, connect your device to a computer and run the following ADB command:\n\nadb shell pm grant com.duck.stayawakeadb android.permission.WRITE_SECURE_SETTINGS\n\nThis command cannot be executed from the device itself.</string>
+    <string name="copy_command">Copy Command</string>
+    <string name="command_copied">Command: adb shell pm grant com.duck.stayawakeadb android.permission.WRITE_SECURE_SETTINGS</string>
+    <!-- Stay Awake status strings -->
+    <string name="stay_awake_off">Stay Awake is off.</string>
+    <string name="stay_awake_ac_only">Stay Awake is on for AC only.</string>
+    <string name="stay_awake_usb_only">Stay Awake is on for USB only.</string>
+    <string name="stay_awake_wireless_only">Stay Awake is on for Wireless charging only.</string>
+    <string name="stay_awake_ac_usb">Stay Awake is on for AC and USB only.</string>
+    <string name="stay_awake_ac_wireless">Stay Awake is on for AC and Wireless charging only.</string>
+    <string name="stay_awake_usb_wireless">Stay Awake is on for USB and Wireless charging only.</string>
+    <string name="stay_awake_all">Stay Awake is on for AC, USB and Wireless charging.</string>
+    <!-- Status strings -->
+    <string name="enabled">Enabled</string>
+    <string name="disabled">Disabled</string>
 </resources>
