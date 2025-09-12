@@ -148,7 +148,7 @@ class MainActivity : ComponentActivity() {
                 )
             )
                 .setPositiveButton(R.string.go_to_settings) { _, _ ->
-                    startActivity(Intent(SettingsHelperUtil.STTINGS_NOTIFICATION_LISTENER))
+                    startActivity(Intent(SettingsHelperUtil.SETTINGS_NOTIFICATION_LISTENER))
                 }
                 .setNegativeButton(R.string.cancel) { _, _ ->
                     // Do nothing

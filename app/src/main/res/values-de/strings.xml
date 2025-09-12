@@ -55,4 +55,6 @@
     <!-- Status strings -->
     <string name="enabled">Aktiviert</string>
     <string name="disabled">Deaktiviert</string>
+    <!-- Notification strings -->
+    <string name="dont_show_this_notification">Diese Benachrichtigung nicht anzeigen</string>
 </resources>

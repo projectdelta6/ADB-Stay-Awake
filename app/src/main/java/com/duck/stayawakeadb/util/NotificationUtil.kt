@@ -140,7 +140,7 @@ object NotificationUtil {
             val dissableNotificationAction: NotificationCompat.Action =
                 NotificationCompat.Action.Builder(
                     R.drawable.ic_cancel_black,
-                    "Don't show this notification",
+                    context.getString(R.string.dont_show_this_notification),
                     disableNotificationPendingIntent
                 ).build()
 

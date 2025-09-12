@@ -3,8 +3,11 @@ package com.duck.stayawakeadb.util
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.BatteryManager
+import android.os.Build
 import android.provider.Settings
 import android.widget.Toast
+import androidx.annotation.RequiresApi
+import androidx.core.content.edit
 import com.duck.stayawakeadb.R
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -120,9 +123,9 @@ class SettingsHelperUtil(private val applicationContext: Context) {
 
     private fun editSharedPref(action:(editor: SharedPreferences.Editor) -> Unit) {
         sharedPrefLock.withLock {
-            val editor: SharedPreferences.Editor = sharedPreferences.edit()
-            action.invoke(editor)
-            editor.apply()
+            sharedPreferences.edit {
+                action.invoke(this)
+            }
         }
     }
 
@@ -201,13 +204,9 @@ class SettingsHelperUtil(private val applicationContext: Context) {
         } catch (e: SecurityException) {
             Log.e("SettingsHelperUtil", "SecurityException setting $name: ", e)
             //todo: needs permission command
-        } finally {
-            /*if (changed) {
-                toast(turnOn, name)
-            }*/
-            Log.d("SettingsHelperUtil", "setInt returning changed=$changed")
-            return changed
         }
+        Log.d("SettingsHelperUtil", "setInt returning changed=$changed")
+        return changed
     }
 
     private fun toast(turnOn: Boolean, name: String) {
@@ -222,47 +221,6 @@ class SettingsHelperUtil(private val applicationContext: Context) {
             Toast.LENGTH_SHORT
         ).show()
     }
-
-    /*
-    val stayAwakeString: String
-        get() {
-            when (stayAwakeValue) {
-                OFF -> {
-                    //Stay Awake is off.
-                    return "Stay Awake is off."
-                }
-                AC -> {
-                    //Stay Awake is on for AC only.
-                    return "Stay Awake is on for AC only."
-                }
-                USB -> {
-                    //Stay Awake is on for USB only.
-                    return "Stay Awake is on for USB only."
-                }
-                WIRELESS -> {
-                    //Stay Awake is on for Wireless charging only.
-                    return "Stay Awake is on for Wireless charging only."
-                }
-                ACandUSB -> {
-                    //Stay Awake is on for AC and USB only.
-                    return "Stay Awake is on for AC and USB only."
-                }
-                ACandWIRELESS -> {
-                    //Stay Awake is on for AC and Wireless charging only.
-                    return "Stay Awake is on for AC and Wireless charging only."
-                }
-                USBandWIRELESS -> {
-                    //Stay Awake is on for USB and Wireless charging only.
-                    return "Stay Awake is on for USB and Wireless charging only."
-                }
-                ACandUSBandWIRELESS -> {
-                    //Stay Awake is on for AC, USB and Wireless charging.
-                    return "Stay Awake is on for AC, USB and Wireless charging."
-                }
-            }
-            return "none"
-        }
-    */
 
     companion object {
         val sharedPrefLock: ReentrantLock = ReentrantLock(true)
@@ -279,11 +237,10 @@ class SettingsHelperUtil(private val applicationContext: Context) {
         const val ACandUSBandWIRELESS: Int = BatteryManager.BATTERY_PLUGGED_AC +
                 BatteryManager.BATTERY_PLUGGED_USB +
                 BatteryManager.BATTERY_PLUGGED_WIRELESS
-        const val STTINGS: String = "android.settings."
-        const val STTINGS_NOTIFICATION_LISTENER: String = "${STTINGS}ACTION_NOTIFICATION_LISTENER_SETTINGS"
-        const val STTINGS_DEVELOPER: String = "${STTINGS}ACTION_APPLICATION_DEVELOPMENT_SETTINGS"
-        const val STTINGS_WIRELESS_DEBUG: String =
-            "${STTINGS}ACTION_APPLICATION_DEVELOPMENT_SETTINGS" // Wireless debugging is in developer settings
+
+        @RequiresApi(Build.VERSION_CODES.LOLLIPOP_MR1)
+        const val SETTINGS_NOTIFICATION_LISTENER: String =
+            Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
 
         const val NOTIFICATION_KEY: String = "USE.NOTIFICATION"
         const val AUTO_TOGGLE_KEY: String = "AUTO_TOGGLE_STAY_AWAKE"
