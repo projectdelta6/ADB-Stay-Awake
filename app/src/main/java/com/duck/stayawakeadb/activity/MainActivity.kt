@@ -51,6 +51,7 @@ import com.duck.stayawakeadb.BuildConfig
 import com.duck.stayawakeadb.R
 import com.duck.stayawakeadb.constant.Constants.notificationData
 import com.duck.stayawakeadb.service.ADBNotificationListener
+import com.duck.stayawakeadb.ui.composables.SettingSection
 import com.duck.stayawakeadb.ui.theme.ADBStayAwakeTheme
 import com.duck.stayawakeadb.util.NotificationUtil
 import com.duck.stayawakeadb.util.SettingsHelperUtil
@@ -109,6 +110,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun checkAndAskShowNotificationPermission(): Boolean {
+        //Todo extract strings
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
                 true
@@ -147,12 +149,16 @@ class MainActivity : ComponentActivity() {
                     )
                 )
             )
-                .setPositiveButton(R.string.go_to_settings) { _, _ ->
+            dialogBuilder.setPositiveButton(R.string.go_to_settings) { _, _ ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
                     startActivity(Intent(SettingsHelperUtil.SETTINGS_NOTIFICATION_LISTENER))
+                } else {
+                    //todo: handle for older versions ??
                 }
-                .setNegativeButton(R.string.cancel) { _, _ ->
-                    // Do nothing
-                }
+            }
+            dialogBuilder.setNegativeButton(R.string.cancel) { _, _ ->
+                // Do nothing
+            }
             val alertDialog: AlertDialog = dialogBuilder.create()
             alertDialog.setTitle(R.string.request_notification_permission_title)
             alertDialog.show()
@@ -278,47 +284,6 @@ fun MainScreen(settingsHelperUtil: SettingsHelperUtil) {
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
-                // Open Developer Options Button
-                if (developerOptionsEnabled) {
-                    val errorMessage = stringResource(R.string.unable_to_open_developer_options)
-                    Button(
-                        onClick = {
-                            val intent =
-                                Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS).apply {
-                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                }
-                            if (intent.resolveActivity(context.packageManager) != null) {
-                                context.startActivity(intent)
-                            } else {
-                                Toast.makeText(
-                                    context,
-                                    errorMessage,
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp)
-                    ) {
-                        Text(stringResource(R.string.open_developer_options))
-                    }
-                }
-
-                // Auto Toggle Section
-                if (developerOptionsEnabled && (usbDebuggingEnabled || wirelessDebuggingEnabled)) {
-                    SettingSection(
-                        title = stringResource(R.string.auto_toggle_stay_awake),
-                        description = stringResource(R.string.auto_toggle_stay_awake_description),
-                        checked = autoToggleStayAwake,
-                        onCheckedChange = { checked ->
-                            settingsHelperUtil.autoToggleStayAwake = checked
-                            autoToggleStayAwake = checked
-                        },
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
-                }
-
                 // USB Debugging Section
                 if (developerOptionsEnabled) {
                     SettingSection(
@@ -385,6 +350,47 @@ fun MainScreen(settingsHelperUtil: SettingsHelperUtil) {
                     }
                 }
 
+                // Open Developer Options Button
+                if (developerOptionsEnabled) {
+                    val errorMessage = stringResource(R.string.unable_to_open_developer_options)
+                    Button(
+                        onClick = {
+                            val intent =
+                                Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS).apply {
+                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                }
+                            if (intent.resolveActivity(context.packageManager) != null) {
+                                context.startActivity(intent)
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    errorMessage,
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp)
+                    ) {
+                        Text(stringResource(R.string.open_developer_options))
+                    }
+                }
+
+                // Auto Toggle Section
+                if (developerOptionsEnabled && (usbDebuggingEnabled || wirelessDebuggingEnabled)) {
+                    SettingSection(
+                        title = stringResource(R.string.auto_toggle_stay_awake),
+                        description = stringResource(R.string.auto_toggle_stay_awake_description),
+                        checked = autoToggleStayAwake,
+                        onCheckedChange = { checked ->
+                            settingsHelperUtil.autoToggleStayAwake = checked
+                            autoToggleStayAwake = checked
+                        },
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                }
+
                 // Stay Awake Section
                 if (developerOptionsEnabled && usbDebuggingEnabled) {
                     SettingSection(
@@ -423,56 +429,6 @@ fun MainScreen(settingsHelperUtil: SettingsHelperUtil) {
     )
 }
 
-@Composable
-fun SettingSection(
-    title: String,
-    description: String,
-    checked: Boolean,
-    onCheckedChange: ((Boolean) -> Unit)?,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Text(
-                    text = description,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            if (onCheckedChange != null) {
-                Switch(
-                    checked = checked,
-                    onCheckedChange = onCheckedChange
-                )
-            } else {
-                Text(
-                    text = if (checked) stringResource(R.string.enabled) else stringResource(R.string.disabled),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = if (checked)
-                        MaterialTheme.colorScheme.primary
-                    else
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-    }
-}
 
 @Composable
 fun PermissionRequiredDialog(onGrantPermission: () -> Unit) {
