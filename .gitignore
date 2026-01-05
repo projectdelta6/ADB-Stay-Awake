@@ -67,3 +67,4 @@ fastlane/readme.md
 /app/release
 /app/debug
 /.vscode/settings.json
+/.idea/markdown.xml
