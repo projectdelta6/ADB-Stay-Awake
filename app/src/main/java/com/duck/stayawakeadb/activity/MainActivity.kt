@@ -150,11 +150,7 @@ class MainActivity : ComponentActivity() {
                 )
             )
             dialogBuilder.setPositiveButton(R.string.go_to_settings) { _, _ ->
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                    startActivity(Intent(SettingsHelperUtil.SETTINGS_NOTIFICATION_LISTENER))
-                } else {
-                    //todo: handle for older versions ??
-                }
+                startActivity(Intent(SettingsHelperUtil.SETTINGS_NOTIFICATION_LISTENER))
             }
             dialogBuilder.setNegativeButton(R.string.cancel) { _, _ ->
                 // Do nothing

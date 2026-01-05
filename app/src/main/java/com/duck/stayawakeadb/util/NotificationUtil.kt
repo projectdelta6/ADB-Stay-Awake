@@ -137,7 +137,7 @@ object NotificationUtil {
                     disableNotificationIntent,
                     PendingIntent.FLAG_IMMUTABLE
                 )
-            val dissableNotificationAction: NotificationCompat.Action =
+            val disableNotificationAction: NotificationCompat.Action =
                 NotificationCompat.Action.Builder(
                     R.drawable.ic_cancel_black,
                     context.getString(R.string.dont_show_this_notification),
@@ -178,7 +178,7 @@ object NotificationUtil {
                     .setPriority(notificationData.priority)
                     .setVisibility(notificationData.channelLockscreenVisibility)
                     .addAction(toggleAction)
-                    .addAction(dissableNotificationAction)
+                    .addAction(disableNotificationAction)
                     .setSilent(true)
                     .build()
 
