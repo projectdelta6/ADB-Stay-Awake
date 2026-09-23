@@ -10,7 +10,7 @@
     <string name="dev_settings_off">Developer Settings are &lt;u>not&lt;/u> enabled.</string>
     <string name="dev_settings_hidden">Android 17+ hides developer options and debugging status from apps. Stay Awake is toggled from the ADB connection notification instead.</string>
     <string name="service_name">ADB Notification Listener Service</string>
-    <string name="stay_awake">Stay wake</string>
+    <string name="stay_awake">Stay Awake</string>
     <string name="stay_awake_description">Screen will never sleep while charging</string>
     <string name="developer_options">Developer Options</string>
     <string name="developer_options_description">Whether developer options are enabled or not</string>
@@ -28,7 +28,7 @@
     <string name="awake_on_notification_action_text">Turn off</string>
     <string name="awake_off_notification_title">Stay Awake setting is Off</string>
     <string name="awake_off_notification_text">ADB Connected - Stay Awake is Off</string>
-    <string name="awake_off_notification_big_text">An ADB connection has been detected, but the Stay Stay Awake setting is currently off.</string>
+    <string name="awake_off_notification_big_text">An ADB connection has been detected, but the Stay Awake setting is currently off.</string>
     <string name="awake_off_notification_summary">Stay Awake Off</string>
     <string name="awake_off_notification_action_text">Turn on</string>
     <!-- ADB Notification text -->

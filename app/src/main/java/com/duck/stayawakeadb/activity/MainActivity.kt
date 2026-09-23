@@ -126,7 +126,7 @@ class MainActivity : ComponentActivity() {
             } else {
                 AlertDialog.Builder(this)
                     .setTitle("Notification permission")
-                    .setMessage("In Order to show the sticky notification with controlls for turning Stay Awake setting on/off the app requires permission to show notifications.")
+                    .setMessage("In order to show the sticky notification with controls for turning Stay Awake setting on/off the app requires permission to show notifications.")
                     .setPositiveButton("ok") { dialog, _ ->
                         dialog.dismiss()
                         permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
