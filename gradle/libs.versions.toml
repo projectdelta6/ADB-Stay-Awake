@@ -11,7 +11,7 @@ composeBom = "2026.09.00"
 appcompat = "1.8.0"
 localbroadcastmanager = "1.1.0"
 constraintlayout = "2.2.2"
-flexilogger = "1.36.4"
+flexilogger = "2.1.4"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -29,7 +29,7 @@ compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
-flexilogger = { group = "com.github.projectdelta6", name = "FlexiLogger", version.ref = "flexilogger" }
+flexilogger = { group = "io.github.projectdelta6", name = "flexilogger", version.ref = "flexilogger" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
