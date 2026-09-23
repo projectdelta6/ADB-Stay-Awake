@@ -9,8 +9,8 @@ android {
         applicationId = "com.duck.stayawakeadb"
         minSdk = 23
         targetSdk = 37
-        versionCode = 12
-        versionName = "1.0.0"
+        versionCode = 13
+        versionName = "1.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
