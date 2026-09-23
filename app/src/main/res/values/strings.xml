@@ -43,9 +43,9 @@
     <string name="wireless_debugging_description">Debug mode when wireless ADB is connected</string>
     <string name="unable_to_open_developer_options">Unable to open Developer Options. Please navigate manually to Settings > Developer Options</string>
     <string name="permission_required_title">Permission Required</string>
-    <string name="permission_required_message">This app requires WRITE_SECURE_SETTINGS permission to function properly.\n\nTo grant this permission, connect your device to a computer and run the following ADB command:\n\nadb shell pm grant com.duck.stayawakeadb android.permission.WRITE_SECURE_SETTINGS\n\nThis command cannot be executed from the device itself.</string>
+    <string name="permission_required_message">Stay Awake can\'t be changed until the WRITE_SECURE_SETTINGS permission is granted. It can only be granted over ADB: connect this device to a computer and run:</string>
     <string name="copy_command">Copy Command</string>
-    <string name="command_copied">Command: adb shell pm grant com.duck.stayawakeadb android.permission.WRITE_SECURE_SETTINGS</string>
+    <string name="command_copied">Command copied</string>
     <!-- Stay Awake status strings -->
     <string name="stay_awake_off">Stay Awake is off.</string>
     <string name="stay_awake_ac_only">Stay Awake is on for AC only.</string>

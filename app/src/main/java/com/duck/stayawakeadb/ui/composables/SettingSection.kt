@@ -32,6 +32,7 @@ fun SettingSection(
     onCheckedChange: ((Boolean) -> Unit)?,
     modifier: Modifier = Modifier,
     showStatus: Boolean = true,
+    enabled: Boolean = true,
 ) {
     SettingSection(
         title = title,
@@ -40,6 +41,7 @@ fun SettingSection(
         onCheckedChange = onCheckedChange,
         modifier = modifier,
         showStatus = showStatus,
+        enabled = enabled,
     )
 }
 
@@ -51,6 +53,7 @@ fun SettingSection(
     onCheckedChange: ((Boolean) -> Unit)?,
     modifier: Modifier = Modifier,
     showStatus: Boolean = true,
+    enabled: Boolean = true,
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -81,6 +84,7 @@ fun SettingSection(
             if (onCheckedChange != null) {
                 Switch(
                     checked = checked,
+                    enabled = enabled,
                     onCheckedChange = onCheckedChange,
                 )
             } else if (showStatus) {

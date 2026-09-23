@@ -1,14 +1,17 @@
 package com.duck.stayawakeadb.util
 
+import android.Manifest
 import android.app.NotificationManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.os.BatteryManager
 import android.os.Build
 import android.provider.Settings
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import com.duck.stayawakeadb.R
 import com.duck.stayawakeadb.service.ADBNotificationListener
@@ -43,20 +46,20 @@ class SettingsHelperUtil(private val applicationContext: Context) {
                 ?.any { ComponentName.unflattenFromString(it) == listener } == true
         }
 
+    /**
+     * WRITE_SECURE_SETTINGS can only be granted over ADB (`pm grant`), but once granted it shows up
+     * as a normal permission grant. Reading Settings.Global never needs it, so a read is no test.
+     */
     val writeSecureSettingsPermissionGranted: Boolean
-        get() {
-            return try {
-                // Try to read a secure setting that requires WRITE_SECURE_SETTINGS
-                Settings.Global.getInt(
-                    applicationContext.contentResolver,
-                    Settings.Global.ADB_ENABLED,
-                    -1
-                )
-                true
-            } catch (e: SecurityException) {
-                false
-            }
-        }
+        get() = ContextCompat.checkSelfPermission(
+            applicationContext,
+            Manifest.permission.WRITE_SECURE_SETTINGS,
+        ) == PackageManager.PERMISSION_GRANTED
+
+    /** The ADB command that grants [writeSecureSettingsPermissionGranted] to this build. */
+    val grantWriteSecureSettingsCommand: String
+        get() = "adb shell pm grant ${applicationContext.packageName} ${Manifest.permission.WRITE_SECURE_SETTINGS}"
+
     /**
      * Android 17+ reports [Settings.Global.DEVELOPMENT_SETTINGS_ENABLED], [Settings.Global.ADB_ENABLED]
      * and `adb_wifi_enabled` as 0 to third-party apps, even with WRITE_SECURE_SETTINGS granted.

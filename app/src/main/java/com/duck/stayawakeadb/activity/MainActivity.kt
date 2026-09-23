@@ -2,6 +2,8 @@ package com.duck.stayawakeadb.activity
 
 import android.Manifest
 import android.content.BroadcastReceiver
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -24,8 +26,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -33,9 +35,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,8 +48,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.fromHtml
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.duck.stayawakeadb.BuildConfig
 import com.duck.stayawakeadb.R
@@ -57,6 +63,7 @@ import com.duck.stayawakeadb.ui.composables.SettingSection
 import com.duck.stayawakeadb.ui.theme.ADBStayAwakeTheme
 import com.duck.stayawakeadb.util.NotificationUtil
 import com.duck.stayawakeadb.util.SettingsHelperUtil
+import kotlinx.coroutines.delay
 
 
 class MainActivity : ComponentActivity() {
@@ -233,13 +240,19 @@ fun MainScreen(settingsHelperUtil: SettingsHelperUtil) {
         }
     }
 
-    // Permission check UI
-    if (!writeSecureSettingsGranted) {
-        PermissionRequiredDialog(
-            onGrantPermission = {
-                // Dialog is now handled internally by PermissionRequiredDialog
+    // Re-check WRITE_SECURE_SETTINGS on every resume. It's usually granted over ADB while the app
+    // is open on screen, so also poll while it's missing and we're resumed.
+    val lifecycleOwner = LocalLifecycleOwner.current
+    LaunchedEffect(lifecycleOwner) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            writeSecureSettingsGranted = settingsHelperUtil.writeSecureSettingsPermissionGranted
+            while (!writeSecureSettingsGranted) {
+                delay(PERMISSION_POLL_INTERVAL_MS)
+                writeSecureSettingsGranted = settingsHelperUtil.writeSecureSettingsPermissionGranted
             }
-        )
+            // Refresh what the permission gates, now that it's granted
+            stayAwakeEnabled = settingsHelperUtil.stayAwakeEnabled
+        }
     }
 
     Scaffold(
@@ -271,6 +284,13 @@ fun MainScreen(settingsHelperUtil: SettingsHelperUtil) {
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(bottom = 24.dp)
                 )
+
+                if (!writeSecureSettingsGranted) {
+                    PermissionRequiredCard(
+                        modifier = Modifier.padding(bottom = 16.dp),
+                        command = settingsHelperUtil.grantWriteSecureSettingsCommand,
+                    )
+                }
 
                 // Developer Options Section
                 SettingSection(
@@ -304,7 +324,8 @@ fun MainScreen(settingsHelperUtil: SettingsHelperUtil) {
                                 usbDebuggingEnabled = settingsHelperUtil.usbDebuggingEnabled
                             }
                         },
-                        modifier = Modifier.padding(bottom = 16.dp)
+                        modifier = Modifier.padding(bottom = 16.dp),
+                        enabled = writeSecureSettingsGranted,
                     )
                 }
 
@@ -340,6 +361,7 @@ fun MainScreen(settingsHelperUtil: SettingsHelperUtil) {
                                 }
                                 Switch(
                                     checked = wirelessDebuggingEnabled,
+                                    enabled = writeSecureSettingsGranted,
                                     onCheckedChange = { checked ->
                                         if (settingsHelperUtil.setWirelessDebugging(checked)) {
                                             wirelessDebuggingEnabled = checked
@@ -391,7 +413,8 @@ fun MainScreen(settingsHelperUtil: SettingsHelperUtil) {
                             settingsHelperUtil.autoToggleStayAwake = checked
                             autoToggleStayAwake = checked
                         },
-                        modifier = Modifier.padding(bottom = 16.dp)
+                        modifier = Modifier.padding(bottom = 16.dp),
+                        enabled = writeSecureSettingsGranted,
                     )
                 }
 
@@ -409,7 +432,8 @@ fun MainScreen(settingsHelperUtil: SettingsHelperUtil) {
                                 stayAwakeEnabled = settingsHelperUtil.stayAwakeEnabled
                             }
                         },
-                        modifier = Modifier.padding(bottom = 16.dp)
+                        modifier = Modifier.padding(bottom = 16.dp),
+                        enabled = writeSecureSettingsGranted,
                     )
                 }
 
@@ -423,7 +447,8 @@ fun MainScreen(settingsHelperUtil: SettingsHelperUtil) {
                             settingsHelperUtil.showNotification = checked
                             showNotification = checked
                         },
-                        modifier = Modifier.padding(bottom = 16.dp)
+                        modifier = Modifier.padding(bottom = 16.dp),
+                        enabled = writeSecureSettingsGranted,
                     )
                 }
 
@@ -434,33 +459,58 @@ fun MainScreen(settingsHelperUtil: SettingsHelperUtil) {
 }
 
 
+private const val PERMISSION_POLL_INTERVAL_MS = 1_000L
+
+/**
+ * Shown while WRITE_SECURE_SETTINGS is missing, with the ADB [command] that grants it.
+ */
 @Composable
-fun PermissionRequiredDialog(onGrantPermission: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = { },
-        title = {
+private fun PermissionRequiredCard(
+    modifier: Modifier = Modifier,
+    command: String,
+) {
+    val context = LocalContext.current
+    val copiedMessage = stringResource(R.string.command_copied)
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.errorContainer,
+            contentColor = MaterialTheme.colorScheme.onErrorContainer,
+        ),
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+        ) {
             Text(
-                stringResource(R.string.permission_required_title),
-                color = MaterialTheme.colorScheme.onSurface
+                text = stringResource(R.string.permission_required_title),
+                style = MaterialTheme.typography.titleMedium,
             )
-        },
-        text = {
             Text(
-                stringResource(R.string.permission_required_message),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.bodyMedium
+                modifier = Modifier.padding(top = 4.dp),
+                text = stringResource(R.string.permission_required_message),
+                style = MaterialTheme.typography.bodyMedium,
             )
-        },
-        confirmButton = {
-            TextButton(onClick = onGrantPermission) {
+            SelectionContainer {
                 Text(
-                    text = stringResource(R.string.cancel),
-                    color = MaterialTheme.colorScheme.primary
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    text = command,
+                    style = MaterialTheme.typography.bodySmall,
+                    fontFamily = FontFamily.Monospace,
                 )
             }
-        },
-        containerColor = MaterialTheme.colorScheme.surface,
-        titleContentColor = MaterialTheme.colorScheme.onSurface,
-        textContentColor = MaterialTheme.colorScheme.onSurfaceVariant
-    )
+            Button(
+                modifier = Modifier.align(Alignment.End),
+                onClick = {
+                    context.getSystemService(ClipboardManager::class.java)
+                        .setPrimaryClip(ClipData.newPlainText(command, command))
+                    // Android 13+ shows its own clipboard confirmation
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                        Toast.makeText(context, copiedMessage, Toast.LENGTH_SHORT).show()
+                    }
+                },
+            ) {
+                Text(stringResource(R.string.copy_command))
+            }
+        }
+    }
 }

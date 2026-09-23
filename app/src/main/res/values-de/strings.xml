@@ -41,9 +41,9 @@
     <string name="wireless_debugging_description">Debug-Modus bei drahtloser ADB-Verbindung</string>
     <string name="unable_to_open_developer_options">Entwickleroptionen können nicht geöffnet werden. Bitte navigieren Sie manuell zu Einstellungen > Entwickleroptionen</string>
     <string name="permission_required_title">Berechtigung erforderlich</string>
-    <string name="permission_required_message">Diese App benötigt die WRITE_SECURE_SETTINGS-Berechtigung, um ordnungsgemäß zu funktionieren.\n\nUm diese Berechtigung zu erteilen, verbinden Sie Ihr Gerät mit einem Computer und führen Sie den folgenden ADB-Befehl aus:\n\nadb shell pm grant com.duck.stayawakeadb android.permission.WRITE_SECURE_SETTINGS\n\nDieser Befehl kann nicht vom Gerät selbst ausgeführt werden.</string>
+    <string name="permission_required_message">Wach bleiben kann erst geändert werden, wenn die Berechtigung WRITE_SECURE_SETTINGS erteilt wurde. Sie kann nur über ADB erteilt werden: Verbinden Sie dieses Gerät mit einem Computer und führen Sie Folgendes aus:</string>
     <string name="copy_command">Befehl kopieren</string>
-    <string name="command_copied">Befehl: adb shell pm grant com.duck.stayawakeadb android.permission.WRITE_SECURE_SETTINGS</string>
+    <string name="command_copied">Befehl kopiert</string>
     <!-- Stay Awake status strings -->
     <string name="stay_awake_off">Stay Awake ist aus.</string>
     <string name="stay_awake_ac_only">Stay Awake ist nur für AC eingeschaltet.</string>
