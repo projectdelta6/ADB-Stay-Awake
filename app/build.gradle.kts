@@ -1,32 +1,23 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 }
 
 android {
-    compileSdk = 36
+    compileSdk = 37
     defaultConfig {
         applicationId = "com.duck.stayawakeadb"
         minSdk = 23
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 12
         versionName = "1.0.0"
-
-        /* Output File name */
-        setProperty("archivesBaseName", "Stay-Awake_ADB-v${versionName}(${versionCode})")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildFeatures {
         compose = true
-        dataBinding = true
         buildConfig = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.kotlin.get()
     }
 
     buildTypes {
@@ -44,11 +35,16 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlin {
-        jvmToolchain(17)
-    }
-
     namespace = "com.duck.stayawakeadb"
+}
+
+/* Output File name */
+base {
+    archivesName = "Stay-Awake_ADB-v${android.defaultConfig.versionName}(${android.defaultConfig.versionCode})"
+}
+
+kotlin {
+    jvmToolchain(17)
 }
 
 dependencies {
