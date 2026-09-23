@@ -44,6 +44,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -180,6 +182,8 @@ fun MainScreen(settingsHelperUtil: SettingsHelperUtil) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
 
+    // Android 17+ reports debug settings as off to apps; see SettingsHelperUtil.debugStateHidden
+    val debugStateHidden = settingsHelperUtil.debugStateHidden
     var developerOptionsEnabled by remember { mutableStateOf(settingsHelperUtil.developerOptionsEnabled) }
     var usbDebuggingEnabled by remember { mutableStateOf(settingsHelperUtil.usbDebuggingEnabled) }
     var stayAwakeEnabled by remember { mutableStateOf(settingsHelperUtil.stayAwakeEnabled) }
@@ -271,17 +275,21 @@ fun MainScreen(settingsHelperUtil: SettingsHelperUtil) {
                 // Developer Options Section
                 SettingSection(
                     title = stringResource(R.string.developer_options),
-                    description = if (developerOptionsEnabled)
-                        stringResource(R.string.dev_settings_on)
-                    else
-                        stringResource(R.string.dev_settings_off),
+                    description = AnnotatedString.fromHtml(
+                        when {
+                            debugStateHidden -> stringResource(R.string.dev_settings_hidden)
+                            developerOptionsEnabled -> stringResource(R.string.dev_settings_on)
+                            else -> stringResource(R.string.dev_settings_off)
+                        },
+                    ),
                     checked = developerOptionsEnabled,
                     onCheckedChange = null, // Read-only
-                    modifier = Modifier.padding(bottom = 16.dp)
+                    modifier = Modifier.padding(bottom = 16.dp),
+                    showStatus = !debugStateHidden,
                 )
 
                 // USB Debugging Section
-                if (developerOptionsEnabled) {
+                if (!debugStateHidden && developerOptionsEnabled) {
                     SettingSection(
                         title = stringResource(R.string.usb_debugging),
                         description = stringResource(R.string.usb_debugging_description),
@@ -301,7 +309,7 @@ fun MainScreen(settingsHelperUtil: SettingsHelperUtil) {
                 }
 
                 // Wireless Debugging Section
-                if (developerOptionsEnabled) {
+                if (!debugStateHidden && developerOptionsEnabled) {
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -347,7 +355,7 @@ fun MainScreen(settingsHelperUtil: SettingsHelperUtil) {
                 }
 
                 // Open Developer Options Button
-                if (developerOptionsEnabled) {
+                if (debugStateHidden || developerOptionsEnabled) {
                     val errorMessage = stringResource(R.string.unable_to_open_developer_options)
                     Button(
                         onClick = {
@@ -374,7 +382,7 @@ fun MainScreen(settingsHelperUtil: SettingsHelperUtil) {
                 }
 
                 // Auto Toggle Section
-                if (developerOptionsEnabled && (usbDebuggingEnabled || wirelessDebuggingEnabled)) {
+                if (debugStateHidden || (developerOptionsEnabled && (usbDebuggingEnabled || wirelessDebuggingEnabled))) {
                     SettingSection(
                         title = stringResource(R.string.auto_toggle_stay_awake),
                         description = stringResource(R.string.auto_toggle_stay_awake_description),
@@ -388,7 +396,7 @@ fun MainScreen(settingsHelperUtil: SettingsHelperUtil) {
                 }
 
                 // Stay Awake Section
-                if (developerOptionsEnabled && usbDebuggingEnabled) {
+                if (debugStateHidden || (developerOptionsEnabled && usbDebuggingEnabled)) {
                     SettingSection(
                         title = stringResource(R.string.stay_awake),
                         description = getStayAwakeDescription(settingsHelperUtil.stayAwakeValue),
@@ -406,7 +414,7 @@ fun MainScreen(settingsHelperUtil: SettingsHelperUtil) {
                 }
 
                 // Notification Section
-                if (developerOptionsEnabled && usbDebuggingEnabled) {
+                if (debugStateHidden || (developerOptionsEnabled && usbDebuggingEnabled)) {
                     SettingSection(
                         title = stringResource(R.string.show_notification),
                         description = stringResource(R.string.toggle_if_the_notification_should_be_shown),

@@ -6,6 +6,7 @@
     <string name="request_notification_permission_title">Benachrichtigungszugriff erforderlich</string>
     <string name="dev_settings_on">Entwicklereinstellungen sind aktiviert.</string>
     <string name="dev_settings_off">Entwicklereinstellungen sind &lt;u>nicht&lt;/u> aktiviert.</string>
+    <string name="dev_settings_hidden">Ab Android 17 verbirgt das System den Status der Entwickleroptionen und des Debuggings vor Apps. Wach bleiben wird stattdessen über die ADB-Verbindungsbenachrichtigung umgeschaltet.</string>
     <string name="service_name">ADB-Benachrichtigungs-Listener-Dienst</string>
     <string name="stay_awake">Wach bleiben</string>
     <string name="stay_awake_description">Bildschirm schläft nie während des Ladens</string>

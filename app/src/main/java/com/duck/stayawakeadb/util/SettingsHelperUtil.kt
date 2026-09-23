@@ -1,5 +1,7 @@
 package com.duck.stayawakeadb.util
 
+import android.app.NotificationManager
+import android.content.ComponentName
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.BatteryManager
@@ -9,6 +11,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.edit
 import com.duck.stayawakeadb.R
+import com.duck.stayawakeadb.service.ADBNotificationListener
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
@@ -25,11 +28,19 @@ class SettingsHelperUtil(private val applicationContext: Context) {
 
     val notificationPermissionGranted: Boolean
         get() {
+            val listener = ComponentName(applicationContext, ADBNotificationListener::class.java)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+                return applicationContext.getSystemService(NotificationManager::class.java)
+                    .isNotificationListenerAccessGranted(listener)
+            }
+            // Match the exact component, a package-name substring also matches e.g. "<pkg>.debug"
             return Settings.Secure
                 .getString(
                     applicationContext.contentResolver,
                     "enabled_notification_listeners"
-                )?.contains(applicationContext.packageName!!) == true
+                )
+                ?.split(':')
+                ?.any { ComponentName.unflattenFromString(it) == listener } == true
         }
 
     val writeSecureSettingsPermissionGranted: Boolean
@@ -46,6 +57,15 @@ class SettingsHelperUtil(private val applicationContext: Context) {
                 false
             }
         }
+    /**
+     * Android 17+ reports [Settings.Global.DEVELOPMENT_SETTINGS_ENABLED], [Settings.Global.ADB_ENABLED]
+     * and `adb_wifi_enabled` as 0 to third-party apps, even with WRITE_SECURE_SETTINGS granted.
+     * When true, [developerOptionsEnabled], [usbDebuggingEnabled] and [wirelessDebuggingEnabled]
+     * can't be trusted, and ADB state comes from the system's ADB notifications instead
+     * ([usbAdbConnected] / [wirelessAdbConnected]).
+     */
+    val debugStateHidden: Boolean
+        get() = Build.VERSION.SDK_INT >= ANDROID_17
 
     val developerOptionsEnabled: Boolean
         get() {
@@ -152,8 +172,18 @@ class SettingsHelperUtil(private val applicationContext: Context) {
     fun setStayAwake(turnOn: Boolean): Boolean {
         Log.d(
             "SettingsHelperUtil",
-            "setStayAwake called with turnOn=$turnOn, developerOptionsEnabled=$developerOptionsEnabled, usbDebuggingEnabled=$usbDebuggingEnabled, wirelessDebuggingEnabled=$wirelessDebuggingEnabled"
+            "setStayAwake called with turnOn=$turnOn, debugStateHidden=$debugStateHidden, developerOptionsEnabled=$developerOptionsEnabled, usbDebuggingEnabled=$usbDebuggingEnabled, wirelessDebuggingEnabled=$wirelessDebuggingEnabled, usbAdbConnected=$usbAdbConnected, wirelessAdbConnected=$wirelessAdbConnected"
         )
+        if (debugStateHidden) {
+            // Debug settings read as 0 here, so pick the value from the ADB connection(s) we've seen
+            val onValue = when {
+                usbAdbConnected && wirelessAdbConnected -> ACandUSBandWIRELESS
+                wirelessAdbConnected -> ACandWIRELESS
+                else -> ACandUSB // USB connection, or a manual toggle with no connection seen
+            }
+            Log.d("SettingsHelperUtil", "Debug state hidden, setting stay awake to onValue=$onValue")
+            return setInt(turnOn, Settings.Global.STAY_ON_WHILE_PLUGGED_IN, onValue, OFF)
+        }
         if (developerOptionsEnabled && (!turnOn || usbDebuggingEnabled || wirelessDebuggingEnabled)) {
             // Determine the appropriate stay awake value based on enabled debugging types
             val onValue = when {
@@ -190,7 +220,7 @@ class SettingsHelperUtil(private val applicationContext: Context) {
                     onValue
                 )
                 changed = true
-            } else if (!isOff) {
+            } else if (!turnOn && !isOff) {
                 Log.d("SettingsHelperUtil", "Setting $name to $offValue")
                 Settings.Global.putInt(
                     applicationContext.contentResolver,
@@ -246,5 +276,16 @@ class SettingsHelperUtil(private val applicationContext: Context) {
         const val AUTO_TOGGLE_KEY: String = "AUTO_TOGGLE_STAY_AWAKE"
 
         var ADBConnectionState: Boolean = false
+
+        /** Set from the system "USB debugging connected" notification. */
+        @Volatile
+        var usbAdbConnected: Boolean = false
+
+        /** Set from the system "Wireless debugging connected" notification. */
+        @Volatile
+        var wirelessAdbConnected: Boolean = false
+
+        /** API level of Android 17, where debug-state reads started being hidden from apps. */
+        private const val ANDROID_17: Int = 37
     }
 }

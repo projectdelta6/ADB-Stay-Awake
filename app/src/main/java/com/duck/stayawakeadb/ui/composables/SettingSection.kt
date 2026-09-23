@@ -18,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.duck.stayawakeadb.R
@@ -29,7 +30,27 @@ fun SettingSection(
     description: String,
     checked: Boolean,
     onCheckedChange: ((Boolean) -> Unit)?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    showStatus: Boolean = true,
+) {
+    SettingSection(
+        title = title,
+        description = AnnotatedString(description),
+        checked = checked,
+        onCheckedChange = onCheckedChange,
+        modifier = modifier,
+        showStatus = showStatus,
+    )
+}
+
+@Composable
+fun SettingSection(
+    title: String,
+    description: AnnotatedString,
+    checked: Boolean,
+    onCheckedChange: ((Boolean) -> Unit)?,
+    modifier: Modifier = Modifier,
+    showStatus: Boolean = true,
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -60,9 +81,9 @@ fun SettingSection(
             if (onCheckedChange != null) {
                 Switch(
                     checked = checked,
-                    onCheckedChange = onCheckedChange
+                    onCheckedChange = onCheckedChange,
                 )
-            } else {
+            } else if (showStatus) {
                 Text(
                     text = if (checked) stringResource(R.string.enabled) else stringResource(R.string.disabled),
                     style = MaterialTheme.typography.bodyMedium,
