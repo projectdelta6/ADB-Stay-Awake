@@ -8,8 +8,9 @@
     <string name="request_notification_permission_title">Notification access required</string>
     <string name="dev_settings_on">Developer Settings are enabled.</string>
     <string name="dev_settings_off">Developer Settings are &lt;u>not&lt;/u> enabled.</string>
+    <string name="dev_settings_hidden">Android 17+ hides developer options and debugging status from apps. Stay Awake is toggled from the ADB connection notification instead.</string>
     <string name="service_name">ADB Notification Listener Service</string>
-    <string name="stay_awake">Stay wake</string>
+    <string name="stay_awake">Stay Awake</string>
     <string name="stay_awake_description">Screen will never sleep while charging</string>
     <string name="developer_options">Developer Options</string>
     <string name="developer_options_description">Whether developer options are enabled or not</string>
@@ -27,11 +28,36 @@
     <string name="awake_on_notification_action_text">Turn off</string>
     <string name="awake_off_notification_title">Stay Awake setting is Off</string>
     <string name="awake_off_notification_text">ADB Connected - Stay Awake is Off</string>
-    <string name="awake_off_notification_big_text">An ADB connection has been detected, but the Stay Stay Awake setting is currently off.</string>
+    <string name="awake_off_notification_big_text">An ADB connection has been detected, but the Stay Awake setting is currently off.</string>
     <string name="awake_off_notification_summary">Stay Awake Off</string>
     <string name="awake_off_notification_action_text">Turn on</string>
     <!-- ADB Notification text -->
     <string name="adb_notification_title">USB debugging connected</string>
     <string name="adb_notification_title_huawei">USB debugging started</string>
     <string name="adb_wifi_notification_title">Wireless debugging connected</string>
+    <!-- New UI strings -->
+    <string name="open_developer_options">Open Developer Options</string>
+    <string name="auto_toggle_stay_awake">Auto Toggle Stay Awake</string>
+    <string name="auto_toggle_stay_awake_description">Automatically turn stay awake on/off when ADB connects/disconnects</string>
+    <string name="wireless_debugging">Wireless Debugging</string>
+    <string name="wireless_debugging_description">Debug mode when wireless ADB is connected</string>
+    <string name="unable_to_open_developer_options">Unable to open Developer Options. Please navigate manually to Settings > Developer Options</string>
+    <string name="permission_required_title">Permission Required</string>
+    <string name="permission_required_message">Stay Awake can\'t be changed until the WRITE_SECURE_SETTINGS permission is granted. It can only be granted over ADB: connect this device to a computer and run:</string>
+    <string name="copy_command">Copy Command</string>
+    <string name="command_copied">Command copied</string>
+    <!-- Stay Awake status strings -->
+    <string name="stay_awake_off">Stay Awake is off.</string>
+    <string name="stay_awake_ac_only">Stay Awake is on for AC only.</string>
+    <string name="stay_awake_usb_only">Stay Awake is on for USB only.</string>
+    <string name="stay_awake_wireless_only">Stay Awake is on for Wireless charging only.</string>
+    <string name="stay_awake_ac_usb">Stay Awake is on for AC and USB only.</string>
+    <string name="stay_awake_ac_wireless">Stay Awake is on for AC and Wireless charging only.</string>
+    <string name="stay_awake_usb_wireless">Stay Awake is on for USB and Wireless charging only.</string>
+    <string name="stay_awake_all">Stay Awake is on for AC, USB and Wireless charging.</string>
+    <!-- Status strings -->
+    <string name="enabled">Enabled</string>
+    <string name="disabled">Disabled</string>
+    <!-- Notification strings -->
+    <string name="dont_show_this_notification">Don\'t show this notification</string>
 </resources>

@@ -12,7 +12,7 @@
             android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name"
             android:supportsRtl="true"
-            android:theme="@style/AppTheme"
+            android:theme="@style/Theme.Compose"
             tools:ignore="GoogleAppIndexingWarning">
         <activity
                 android:name=".activity.MainActivity"
@@ -31,6 +31,15 @@
             <intent-filter>
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
+            <!-- API 31+: limit which notification types the user is asked to share. The system
+                 ADB notification is non-conversation, so it's "alerting" (or "silent" if the user
+                 lowers the channel's importance). Conversations (messaging) are never needed. -->
+            <meta-data
+                    android:name="android.service.notification.default_filter_types"
+                    android:value="alerting|silent" />
+            <meta-data
+                    android:name="android.service.notification.disabled_filter_types"
+                    android:value="conversations" />
         </service>
         <service android:name=".service.NotificationActionService" />
     </application>

@@ -3,6 +3,14 @@ This is a simple app that has one purpose: Automatically enable/dissable the "St
 
 [Project repo](https://github.com/projectdelta6/ADB-Stay-Awake)
 
+## Recent Updates
+
+- ✅ Migrated to Gradle Kotlin DSL with Android version catalogs
+- ✅ Updated UI to modern Material3 Compose with dynamic theming
+- ✅ Added WRITE_SECURE_SETTINGS permission check with user prompt
+- ✅ Implemented Wireless Debugging toggle with settings page access
+- ✅ Modern card-based UI with improved user experience
+
 ## Important
 
 The android.permission.WRITE_SECURE_SETTINGS is a System permission that is not granted to any
@@ -21,9 +29,3 @@ in the [APK folder](https://github.com/projectdelta6/ADB-Stay-Awake/tree/master/
 The APK is also available on [IzzyOnDroid](https://apt.izzysoft.de/fdroid/)
 
 [![Release](https://img.shields.io/endpoint?url=https://apt.izzysoft.de/fdroid/api/v1/shield/com.duck.stayawakeadb)](https://apt.izzysoft.de/fdroid/index/apk/com.duck.stayawakeadb)
-
-## ToDo:
-
-* check if WRITE_SECURE_SETTINGS permission is granted and, if not, prompt to run command.
-* add Wireless Debugging setting toggle.
-* make it look sexy.

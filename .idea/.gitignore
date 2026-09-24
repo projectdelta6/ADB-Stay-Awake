@@ -6,3 +6,7 @@
 /migrations.xml
 /my-plugin-state.xml
 /deploymentTargetSelector.xml
+/AndroidProjectSystem.xml
+/copilot.*
+/runConfigurations.xml
+/inspectionProfiles
